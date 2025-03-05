@@ -5,6 +5,8 @@ hydra:
     chdir: True
 
 defaults:
+  - /user/conf/input@input.synthetic: synthetic
+
   - override /input: [synthetic]
   - override /modules: [smb_simple, iceflow, time, thk, vert_flow, particles]
   - override /output: [write_ncdf,plot2d]

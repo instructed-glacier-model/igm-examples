@@ -5,6 +5,10 @@ hydra:
     chdir: True
 
 defaults:
+
+  - /user/conf/input@input.Bueler2005C: Bueler2005C
+  - /user/conf/modules@modules.forcing_Bueler2005C: forcing_Bueler2005C
+
   - override /input: [Bueler2005C]
   - override /modules: [forcing_Bueler2005C, iceflow, time, thk]
   - override /output: [write_ncdf,plot2d]
