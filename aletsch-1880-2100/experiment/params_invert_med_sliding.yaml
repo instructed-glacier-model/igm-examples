@@ -7,11 +7,11 @@ defaults:
   - override /inputs: [load_ncdf]
   - override /processes: [iceflow] 
 
-hydra:
-  # output_subdir: my_result_${core.gpu_id} # name the result based on the GPU ID
-  # output_subdir: my_result_particles_${processes.particles.part_frequency_seeding} # name the result based on a parameter with multirun
-  job:
-    chdir: True
+# hydra:
+#   # output_subdir: my_result_${core.gpu_id} # name the result based on the GPU ID
+#   # output_subdir: my_result_particles_${processes.particles.part_frequency_seeding} # name the result based on a parameter with multirun
+#   job:
+#     chdir: True
 
 inputs:
   load_ncdf:

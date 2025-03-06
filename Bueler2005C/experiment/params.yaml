@@ -1,8 +1,8 @@
 # @package _global_
 
-hydra:
-  job:
-    chdir: True
+# hydra:
+#   job:
+#     chdir: True
 
 defaults:
 

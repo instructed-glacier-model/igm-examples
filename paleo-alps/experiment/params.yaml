@@ -5,9 +5,9 @@ core:
   logging: True
   print_params: True
 
-hydra:
-  job:
-    chdir: True
+# hydra:
+#   job:
+#     chdir: True
 
 defaults:
   # - /processes/smb_signal@processes.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error

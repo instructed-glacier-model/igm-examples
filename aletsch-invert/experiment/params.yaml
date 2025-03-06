@@ -1,8 +1,8 @@
 # @package _global_
 
-hydra:
-  job:
-    chdir: True
+# hydra:
+#   job:
+#     chdir: True
 
 core:
   url_data: "https://www.dropbox.com/scl/fo/uhreatoec6yfveayqa098/h?rlkey=1ymk9o4s6qlah5bb8llzo5ggo&dl=0"
