@@ -5,23 +5,23 @@ hydra:
     chdir: True
 
 defaults:
-  - /user/conf/modules@modules.mysmb: mysmb
+  - /user/conf/processes@processes.mysmb: mysmb
   
-  - override /input: [oggm_shop]
-  - override /modules: [mysmb, iceflow, time, thk, vert_flow, particles]
-  - override /output: [write_ncdf,plot2d]
+  - override /inputs: [oggm_shop]
+  - override /processes: [mysmb, iceflow, time, thk, vert_flow, particles]
+  - override /outputs: [write_ncdf,plot2d]
 
-input:
+inputs:
   oggm_shop:
     RGI_ID: "RGI60-11.01450"
     RGI_version: 6
 
-modules:
+processes:
   time:
     start: 2000.0
     end: 2100.0
     save: 10.0
 
-output:
+outputs:
   plot2d:
     live: true

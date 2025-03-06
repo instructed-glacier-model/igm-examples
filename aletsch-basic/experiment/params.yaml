@@ -10,9 +10,9 @@ core:
   logging_level: 30
 
 defaults:
-  - override /input: [local]
-  - override /modules: [time, thk, iceflow, smb_simple] # vert_flow, particles, 
-  - override /output: [write_ncdf, plot2d]
+  - override /inputs: [local]
+  - override /processes: [time, thk, iceflow, smb_simple] # vert_flow, particles, 
+  - override /outputs: [write_ncdf, plot2d]
   # - override /hydra/launcher: joblib # no error but does not seem to work compared to if you call it on the command line...
   # experiment: params # can we make it work here?
 
@@ -20,7 +20,7 @@ defaults:
   # - hydra/help: my_app_help
   # - override hydra/help: my_app_help
 
-input:
+inputs:
   local:
     filename: data/input.nc
     coarsening:
@@ -37,7 +37,7 @@ input:
   #   ymin: -1e20
   #   ymax: 1e20
 
-modules:
+processes:
   smb_simple:
     array:
       - ["time", "gradabl", "gradacc", "ela", "accmax"]
@@ -49,7 +49,7 @@ modules:
     end: 2000.0
     save: 10.0
     
-output:
+outputs:
   plot2d:
     live: False
     

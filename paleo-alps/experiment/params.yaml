@@ -10,20 +10,20 @@ hydra:
     chdir: True
 
 defaults:
-  # - /modules/smb_signal@modules.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
-  - /user/conf/modules@modules.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
+  # - /processes/smb_signal@processes.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
+  - /user/conf/processes@processes.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
   
-  - override /input: [load_tif]
-  - override /modules: [time, iceflow, thk, smb_signal]
-  - override /output: [plot2d, write_ncdf]
+  - override /inputs: [load_tif]
+  - override /processes: [time, iceflow, thk, smb_signal]
+  - override /outputs: [plot2d, write_ncdf]
 #  - override /hydra/launcher: joblib
 
-input:
+inputs:
   load_tif:
     folder: "data"
     coarsen: 2
 
-modules:
+processes:
   smb_signal:
     pdela: 900.0 # default param in the .py file has a big typo (30000 instead of 3000...)
   time:
@@ -31,6 +31,6 @@ modules:
     end: -25000.0
     save: 100.0
 
-output:
+outputs:
   plot2d:
     live: true

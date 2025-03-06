@@ -10,7 +10,7 @@ def params(parser):
 
 def initialize(cfg,state):
     state.meanela = np.quantile(state.usurf[state.thk>10],0.2)
-    # cfg.modules.mysmb.meanela = np.quantile(state.usurf[state.thk>10],0.2) # cfg does not seem to work here.. which is okay as maybe we want to keep the config separate...
+    # cfg.processes.mysmb.meanela = np.quantile(state.usurf[state.thk>10],0.2) # cfg does not seem to work here.. which is okay as maybe we want to keep the config separate...
 
 def update(cfg,state):
     # perturabe the ELA with sinusional signal 

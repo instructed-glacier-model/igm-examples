@@ -5,16 +5,16 @@ hydra:
     chdir: True
 
 defaults:
-  - override /modules: [time, iceflow, thk, clim_oggm, smb_oggm]
-  - override /input: [oggm_shop]
-  - override /output: [write_ncdf,plot2d]
+  - override /processes: [time, iceflow, thk, clim_oggm, smb_oggm]
+  - override /inputs: [oggm_shop]
+  - override /outputs: [write_ncdf,plot2d]
 
-input:
+inputs:
   oggm_shop:
     RGI_ID: "RGI60-11.01450"
     RGI_version: 6
 
-modules:
+processes:
   time:
     start: 1800.0
     end: 2100.0
@@ -29,6 +29,6 @@ modules:
                           [ 2020,           0.0,         1.0],
                           [ 2100,           4.0,         1.0]]
 
-output:
+outputs:
   plot2d:
     live: true

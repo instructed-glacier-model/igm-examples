@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-from igm.modules.utils import complete_data
+from igm.processes.utils import complete_data
 
 def run(cfg, state):
 

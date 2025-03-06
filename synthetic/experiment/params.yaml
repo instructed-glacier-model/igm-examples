@@ -5,13 +5,13 @@ hydra:
     chdir: True
 
 defaults:
-  - /user/conf/input@input.synthetic: synthetic
+  - /user/conf/inputs@inputs.synthetic: synthetic
 
-  - override /input: [synthetic]
-  - override /modules: [smb_simple, iceflow, time, thk, vert_flow, particles]
-  - override /output: [write_ncdf,plot2d]
+  - override /inputs: [synthetic]
+  - override /processes: [smb_simple, iceflow, time, thk, vert_flow, particles]
+  - override /outputs: [write_ncdf,plot2d]
 
-modules:
+processes:
   time:
     start: 2000.0
     end: 2500.0
@@ -25,6 +25,6 @@ modules:
              [ 2000,      0.009,     0.005,  2900,      2.0],
              [ 2100,      0.009,     0.005,  3300,      2.0]]
 
-output:
+outputs:
   plot2d:
     live: true

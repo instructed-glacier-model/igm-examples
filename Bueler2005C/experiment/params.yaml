@@ -6,14 +6,14 @@ hydra:
 
 defaults:
 
-  - /user/conf/input@input.Bueler2005C: Bueler2005C
-  - /user/conf/modules@modules.forcing_Bueler2005C: forcing_Bueler2005C
+  - /user/conf/inputs@inputs.Bueler2005C: Bueler2005C
+  - /user/conf/processes@processes.forcing_Bueler2005C: forcing_Bueler2005C
 
-  - override /input: [Bueler2005C]
-  - override /modules: [forcing_Bueler2005C, iceflow, time, thk]
-  - override /output: [write_ncdf,plot2d]
+  - override /inputs: [Bueler2005C]
+  - override /processes: [forcing_Bueler2005C, iceflow, time, thk]
+  - override /outputs: [write_ncdf,plot2d]
 
-modules:
+processes:
   time:
     start: 0.0
     end: 1000.0
@@ -31,7 +31,7 @@ modules:
       # solve_stop_if_no_decrease: true
       # retrain_emulator_lr: 0.0001
       
-output:
+outputs:
   plot2d:
     live: false
   write_ncdf:

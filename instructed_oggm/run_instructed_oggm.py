@@ -8,12 +8,12 @@
     Code written by: Julien Jehl, Fabien Maussion, and Guillaume Jouvet
 """
 
-### general modules 
+### general processes 
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr 
 
-### modules related to oggm & igm
+### processes related to oggm & igm
 from oggm import cfg, utils, workflow, tasks
 from oggm.cfg import G, SEC_IN_YEAR, SEC_IN_DAY
 from oggm.core.massbalance import LinearMassBalance

@@ -3,12 +3,12 @@ core:
   url_data: "https://www.dropbox.com/scl/fo/uhreatoec6yfveayqa098/h?rlkey=1ymk9o4s6qlah5bb8llzo5ggo&dl=0"
 
 defaults:
-  - override /modules: [load_ncdf, iceflow]
+  - override /processes: [load_ncdf, iceflow]
   # - override /hydra/launcher: joblib # no error but does not seem to work compared to if you call it on the command line...
   # experiment: params # can we make it work here?
 
 
-modules:
+processes:
   load_ncdf:
     lncd_input_file: data/input.nc
   iceflow:

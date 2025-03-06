@@ -1,6 +1,6 @@
-# @package modules.smb_signal
+# @package processes.smb_signal
 
-# modules:
+# processes:
   # smb_signal:
 pdela: 3000.0 # default param in the .py file has a big typo (30000 instead of 3000...)
 deladt: 200.0

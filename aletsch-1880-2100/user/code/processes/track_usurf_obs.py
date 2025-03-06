@@ -37,10 +37,10 @@ def initialize(cfg,state):
 
  
     # load the surface toporgaphy available at given year
-    if "time" not in cfg.modules:
+    if "time" not in cfg.processes:
         raise ValueError("The 'time' module is required for the 'clim_aletsch' module.")
     
-    state.usurf = vars(state)['surf_'+str(int(cfg.modules.time.time_start))]
+    state.usurf = vars(state)['surf_'+str(int(cfg.processes.time.time_start))]
     state.thk   = state.usurf -state.topg
 
 def update(cfg,state):

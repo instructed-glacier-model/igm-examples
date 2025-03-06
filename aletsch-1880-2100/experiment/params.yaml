@@ -5,24 +5,24 @@ core:
 
 defaults:
 
-  - /user/conf/modules@modules.smb_accmelt: smb_accmelt 
-  - /user/conf/modules@modules.clim_aletsch: clim_aletsch
+  - /user/conf/processes@processes.smb_accmelt: smb_accmelt 
+  - /user/conf/processes@processes.clim_aletsch: clim_aletsch
 
-  - override /input: [load_ncdf]
-  - override /modules: [clim_aletsch, smb_accmelt, iceflow, time, thk, rockflow, vert_flow, particles]
-  - override /output: [write_ncdf, plot2d]
+  - override /inputs: [load_ncdf]
+  - override /processes: [clim_aletsch, smb_accmelt, iceflow, time, thk, rockflow, vert_flow, particles]
+  - override /outputs: [write_ncdf, plot2d]
 
 hydra:
   # output_subdir: my_result_${core.gpu_id} # name the result based on the GPU ID
-  # output_subdir: my_result_particles_${modules.particles.part_frequency_seeding} # name the result based on a parameter with multirun
+  # output_subdir: my_result_particles_${processes.particles.part_frequency_seeding} # name the result based on a parameter with multirun
   job:
     chdir: True
 
-input:
+inputs:
   load_ncdf:
     input_file: data/input.nc
 
-modules:
+processes:
   iceflow:
     iceflow:
       init_slidingco: 0.0595
@@ -35,6 +35,6 @@ modules:
     tracking_method: simple
     density_seeding: 0.2
 
-output:
+outputs:
   plot2d:
     live: true

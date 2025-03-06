@@ -1,22 +1,22 @@
 # @package _global_
  
 defaults:
-  - override /input: [oggm_shop]
-  - override /modules: [iceflow]
+  - override /inputs: [oggm_shop]
+  - override /processes: [iceflow]
 
 hydra:
   # output_subdir: my_result_${core.gpu_id} # name the result based on the GPU ID
-  # output_subdir: my_result_particles_${modules.particles.part_frequency_seeding} # name the result based on a parameter with multirun
+  # output_subdir: my_result_particles_${processes.particles.part_frequency_seeding} # name the result based on a parameter with multirun
   job:
     chdir: True
 
-input:
+inputs:
   oggm_shop:
     RGI_ID: "RGI60-11.01238"
     RGI_version: 6
     incl_glathida: true
 
-modules:
+processes:
   iceflow:
     iceflow:
       init_slidingco: 0.045

@@ -10,14 +10,14 @@ core:
     visible_gpus: [0]
 
 defaults:
-  - override /input: [load_ncdf]
-  - override /modules: [iceflow]
+  - override /inputs: [load_ncdf]
+  - override /processes: [iceflow]
 
-input:
+inputs:
   load_ncdf:
     input_file: data/input.nc
 
-modules:
+processes:
   iceflow:
     iceflow:
       init_slidingco: 0.045
