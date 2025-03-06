@@ -5,8 +5,8 @@ hydra:
     chdir: True
 
 defaults:
-  - override /processes: [time, iceflow, thk, clim_oggm, smb_oggm]
   - override /inputs: [oggm_shop]
+  - override /processes: [clim_oggm, smb_oggm, iceflow, time, thk]
   - override /outputs: [write_ncdf,plot2d]
 
 inputs:

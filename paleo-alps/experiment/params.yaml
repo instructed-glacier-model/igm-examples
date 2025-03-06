@@ -14,7 +14,7 @@ defaults:
   - /user/conf/processes@processes.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
   
   - override /inputs: [load_tif]
-  - override /processes: [time, iceflow, thk, smb_signal]
+  - override /processes: [smb_signal, iceflow, time, thk]
   - override /outputs: [plot2d, write_ncdf]
 #  - override /hydra/launcher: joblib
 

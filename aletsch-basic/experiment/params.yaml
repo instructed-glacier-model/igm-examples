@@ -11,7 +11,7 @@ core:
 
 defaults:
   - override /inputs: [local]
-  - override /processes: [time, thk, iceflow, smb_simple] # vert_flow, particles, 
+  - override /processes: [smb_simple, iceflow, time, thk] # vert_flow, particles, 
   - override /outputs: [write_ncdf, plot2d]
   # - override /hydra/launcher: joblib # no error but does not seem to work compared to if you call it on the command line...
   # experiment: params # can we make it work here?

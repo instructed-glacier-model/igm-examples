@@ -6,7 +6,6 @@ hydra:
 
 defaults:
   - /user/conf/inputs@inputs.synthetic: synthetic
-
   - override /inputs: [synthetic]
   - override /processes: [smb_simple, iceflow, time, thk, vert_flow, particles]
   - override /outputs: [write_ncdf,plot2d]
