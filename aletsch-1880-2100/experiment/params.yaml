@@ -8,9 +8,20 @@ defaults:
   - /user/conf/processes@processes.smb_accmelt: smb_accmelt 
   - /user/conf/processes@processes.clim_aletsch: clim_aletsch
 
-  - override /inputs: [load_ncdf]
-  - override /processes: [clim_aletsch, smb_accmelt, iceflow, time, thk, rockflow, vert_flow, particles]
-  - override /outputs: [write_ncdf, plot2d]
+  - override /inputs: 
+     - load_ncdf
+  - override /processes: 
+     - clim_aletsch
+     - smb_accmelt
+     - iceflow
+     - time
+     - thk
+     - rockflow
+     - vert_flow
+     - particles
+  - override /outputs: 
+     - write_ncdf
+     - plot2d
 
 # hydra:
 #   # output_subdir: my_result_${core.gpu_id} # name the result based on the GPU ID

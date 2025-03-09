@@ -5,9 +5,17 @@
 #     chdir: True
 
 defaults:
-  - override /inputs: [oggm_shop]
-  - override /processes: [clim_oggm, smb_oggm, iceflow, time, thk]
-  - override /outputs: [write_ncdf,plot2d]
+  - override /inputs: 
+    - oggm_shop
+  - override /processes: 
+    - clim_oggm
+    - smb_oggm
+    - iceflow
+    - time
+    - thk
+  - override /outputs: 
+    - write_ncdf
+    - plot2d
 
 inputs:
   oggm_shop:
@@ -23,12 +31,11 @@ processes:
     iceflow:
       init_slidingco: 0.25
   clim_oggm:
-    clim_trend_array: [
-                          ["time", "delta_temp", "prec_scal"],
-                          [ 1900,           0.0,         1.0],
-                          [ 2020,           0.0,         1.0],
-                          [ 2100,           4.0,         1.0]]
-
+    clim_trend_array: 
+      - ["time", "delta_temp", "prec_scal"]
+      - [ 1900,           0.0,         1.0]
+      - [ 2020,           0.0,         1.0]
+      - [ 2100,           4.0,         1.0]
 outputs:
   plot2d:
     live: true

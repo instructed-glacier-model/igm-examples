@@ -6,9 +6,18 @@
 
 defaults:
   - /user/conf/inputs@inputs.synthetic: synthetic
-  - override /inputs: [synthetic]
-  - override /processes: [smb_simple, iceflow, time, thk, vert_flow, particles]
-  - override /outputs: [write_ncdf,plot2d]
+  - override /inputs: 
+    - synthetic
+  - override /processes: 
+    - smb_simple
+    - iceflow
+    - time
+    - thk
+    - vert_flow
+    - particles
+  - override /outputs: 
+    - write_ncdf
+    - plot2d
 
 processes:
   time:
@@ -19,11 +28,12 @@ processes:
     iceflow:
       init_slidingco: 0.25
   smb_simple:
-    array: [["time", "gradabl", "gradacc", "ela", "accmax"],
-             [ 1900,      0.009,     0.005,  2800,      2.0],
-             [ 2000,      0.009,     0.005,  2900,      2.0],
-             [ 2100,      0.009,     0.005,  3300,      2.0]]
-
+    array: 
+      - ["time", "gradabl", "gradacc", "ela", "accmax"]
+      - [ 1900,      0.009,     0.005,  2800,      2.0]
+      - [ 2000,      0.009,     0.005,  2900,      2.0]
+      - [ 2100,      0.009,     0.005,  3300,      2.0]
+      
 outputs:
   plot2d:
     live: true

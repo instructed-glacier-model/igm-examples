@@ -6,9 +6,19 @@
 
 defaults:
   - /user/conf/processes@processes.mysmb: mysmb
-  - override /inputs: [oggm_shop]
-  - override /processes: [mysmb, iceflow, time, thk, vert_flow, particles]
-  - override /outputs: [write_ncdf,plot2d]
+
+  - override /inputs: 
+    - oggm_shop
+  - override /processes:  
+    - mysmb
+    - iceflow
+    - time
+    - thk
+    - vert_flow
+    - particles
+  - override /outputs: 
+    - write_ncdf
+    - plot2d
 
 inputs:
   oggm_shop:

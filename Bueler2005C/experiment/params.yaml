@@ -9,9 +9,16 @@ defaults:
   - /user/conf/inputs@inputs.Bueler2005C: Bueler2005C
   - /user/conf/processes@processes.forcing_Bueler2005C: forcing_Bueler2005C
 
-  - override /inputs: [Bueler2005C]
-  - override /processes: [forcing_Bueler2005C, iceflow, time, thk]
-  - override /outputs: [write_ncdf,plot2d]
+  - override /inputs: 
+    - Bueler2005C
+  - override /processes: 
+    - forcing_Bueler2005C
+    - iceflow
+    - time
+    - thk
+  - override /outputs: 
+    - write_ncdf
+    - plot2d
 
 processes:
   time:
@@ -35,4 +42,11 @@ outputs:
   plot2d:
     live: false
   write_ncdf:
-    vars_to_save: ["topg", "usurf", "thk", "smb", "velbar_mag", "velsurf_mag", "velbase_mag"]
+    vars_to_save: 
+      - topg
+      - usurf
+      - thk
+      - smb
+      - velbar_mag
+      - velsurf_mag
+      - velbase_mag
