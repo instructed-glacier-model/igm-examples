@@ -24,20 +24,16 @@ from netCDF4 import Dataset
 
 def initialize(cfg,state):
     
-    nc = Dataset(os.path.join("data", 'past_surf.nc'), "r" )
-#    for y in [1880,1926,1957,1980,1999,2009,2017]:
-#        vars(state)['surf_'+str(y)] = np.squeeze( nc.variables['surf_'+str(y)] ).astype("float32") 
+    nc = Dataset(os.path.join(state.original_cwd, "data", 'past_surf.nc'), "r" )
+ 
+    for y in [1880,1926,1957,1980,1999,2009,2017]:
+        vars(state)['surf_'+str(y)] = np.squeeze( nc.variables['surf_'+str(y)] ).astype("float32") 
     for v in nc.variables:
         if v not in ['x','y']:
             vars(state)[v] = tf.Variable(np.squeeze( nc.variables[v] ).astype("float32"))
     nc.close()
-
- 
-    # load the surface toporgaphy available at given year
-    if "time" not in cfg.processes:
-        raise ValueError("The 'time' module is required for the 'clim_aletsch' module.")
     
-    state.usurf = vars(state)['surf_'+str(int(cfg.processes.time.time_start))]
+    state.usurf = vars(state)['surf_'+str(int(cfg.processes.time.start))]
     state.thk   = state.usurf -state.topg
 
 def update(cfg,state):

@@ -35,6 +35,7 @@ inputs:
     input_file: data/input.nc
 
 processes:
+  track_usurf_obs:
   smb_accmelt:
     weight_accumulation: 1.0
     weight_ablation: 1.25
@@ -44,11 +45,11 @@ processes:
   time:
     start: 1880.0
     end: 2020.0
-    save: 5.0
+    save: 1.0
   particles:
     frequency_seeding: 500
     tracking_method: simple
-    density_seeding: 0.2
+    density_seeding: 1
 
 outputs:
   plot2d:
