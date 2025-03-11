@@ -10,17 +10,22 @@ import datetime, time
 import tensorflow as tf
 from netCDF4 import Dataset
 import igm 
- 
+
+# take over the official functions
 update     = igm.processes.particles.particles.update
+# take over the official functions
 finalize   = igm.processes.particles.particles.finalize
 
+# define a new initialize function using the official one
 def initialize(cfg, state):
     igm.processes.particles.particles.initialize(cfg, state)
- 
+
+    # load the seeding map 
     nc = Dataset( os.path.join(state.original_cwd, "data", 'seeding.nc'), "r" ) 
     state.seeding = np.squeeze( nc.variables["seeding"] ).astype("float32") 
     nc.close()
 
+# customize the seeding_particles function
 def seeding_particles(cfg, state):
     """
     User seeding particles in the glacier
@@ -37,4 +42,5 @@ def seeding_particles(cfg, state):
     state.nparticle_thk = state.thk[I]  # ice thickness at position of the particle
     state.nparticle_topg = state.topg[I]  # z position of the bedrock under the particle
 
+# override the official seeding_particles function
 igm.processes.particles.particles.seeding_particles = seeding_particles
