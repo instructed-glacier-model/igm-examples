@@ -10,7 +10,6 @@ core:
 #     chdir: True
 
 defaults:
-  # - /processes/smb_signal@processes.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
   - /user/conf/processes@processes.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
   
   - override /inputs: 
@@ -32,7 +31,11 @@ inputs:
 
 processes:
   smb_signal:
-    pdela: 900.0 # default param in the .py file has a big typo (30000 instead of 3000...)
+    pdela: 3000
+    deladt: 200
+    gradabl: 0.0067
+    gradacc: 0.0005
+    maxacc: 1.0
   time:
     start: -30000.0
     end: -25000.0

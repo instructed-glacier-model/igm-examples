@@ -32,6 +32,8 @@ processes:
       init_slidingco: 0.01
       retrain_emulator_nbit: 1
       retrain_emulator_freq: 1
+      #retrain_emulator_lr: 0.0001
+      
       # type: "solved"
       # solve_nbitmax: 10
       # solve_step_size: 1

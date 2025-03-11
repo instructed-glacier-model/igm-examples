@@ -22,9 +22,6 @@ import time
 from netCDF4 import Dataset
 
 
-def params(parser):
-    pass
-
 def initialize(cfg,state):
     
     nc = Dataset(os.path.join("data", 'past_surf.nc'), "r" )

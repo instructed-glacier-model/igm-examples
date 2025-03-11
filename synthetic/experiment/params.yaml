@@ -27,6 +27,7 @@ processes:
   iceflow:
     iceflow:
       init_slidingco: 0.25
+      exclude_borders: 10
   smb_simple:
     array: 
       - ["time", "gradabl", "gradacc", "ela", "accmax"]

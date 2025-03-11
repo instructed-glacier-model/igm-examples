@@ -11,6 +11,7 @@ defaults:
   - override /inputs: 
      - load_ncdf
   - override /processes: 
+     - track_usurf_obs
      - clim_aletsch
      - smb_accmelt
      - iceflow
@@ -34,6 +35,9 @@ inputs:
     input_file: data/input.nc
 
 processes:
+  smb_accmelt:
+    weight_accumulation: 1.0
+    weight_ablation: 1.25
   iceflow:
     iceflow:
       init_slidingco: 0.0595
