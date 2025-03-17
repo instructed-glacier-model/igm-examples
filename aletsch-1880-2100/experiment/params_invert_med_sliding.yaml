@@ -17,7 +17,7 @@ defaults:
 
 inputs:
   load_ncdf:
-    lncd_input_file: data/input.nc
+    input_file: data/input.nc
 
 processes:
   iceflow:

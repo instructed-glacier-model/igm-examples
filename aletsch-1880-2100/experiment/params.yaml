@@ -7,6 +7,7 @@ defaults:
 
   - /user/conf/processes@processes.smb_accmelt: smb_accmelt 
   - /user/conf/processes@processes.clim_aletsch: clim_aletsch
+  - /user/conf/processes@processes.track_usurf_obs: track_usurf_obs
 
   - override /inputs: 
      - load_ncdf
@@ -35,7 +36,6 @@ inputs:
     input_file: data/input.nc
 
 processes:
-  track_usurf_obs:
   smb_accmelt:
     weight_accumulation: 1.0
     weight_ablation: 1.25
