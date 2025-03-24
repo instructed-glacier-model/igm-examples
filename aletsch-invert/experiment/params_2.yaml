@@ -24,6 +24,7 @@ processes:
     iceflow:
       run_data_assimilation: true
       init_slidingco: 0.045
+      retrain_emulator_freq: 1
     optimize:
       control: 
         - thk
