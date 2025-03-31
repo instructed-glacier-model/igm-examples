@@ -24,10 +24,9 @@ processes:
     start: 2000.0
     end: 2500.0
     save: 10.0
-  iceflow:
-    iceflow:
-      init_slidingco: 0.25
-      exclude_borders: 10
+  iceflow: 
+    init_slidingco: 0.25
+    exclude_borders: 10
   smb_simple:
     array: 
       - ["time", "gradabl", "gradacc", "ela", "accmax"]

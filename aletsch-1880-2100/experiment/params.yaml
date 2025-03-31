@@ -39,9 +39,8 @@ processes:
   smb_accmelt:
     weight_accumulation: 1.0
     weight_ablation: 1.25
-  iceflow:
-    iceflow:
-      init_slidingco: 0.0595
+  iceflow: 
+    init_slidingco: 0.0595
   time:
     start: 1880.0
     end: 2020.0

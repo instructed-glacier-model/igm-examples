@@ -11,8 +11,7 @@ core:
 
 defaults:
   - override /inputs: 
-    - load_ncdf
-#    - local
+    - local
   - override /processes: 
     - smb_simple
     - iceflow
@@ -32,21 +31,11 @@ defaults:
   # - override hydra/help: my_app_help
 
 inputs:
-  # local:
-  #   filename: data/input.nc
-  #   coarsening:
-  #     ratio:
-  #       x: 1
-  #       y: 1
-  load_ncdf:
-    input_file: data/input.nc
-    method_coarsen: skipping
-    coarsen: 1
-    crop: False
-    xmin: -1e20
-    xmax: 1e20
-    ymin: -1e20
-    ymax: 1e20
+  local:
+     folder: data
+     filename: input.nc
+     coarsening:
+       ratio: 1
 
 processes:
   smb_simple:
