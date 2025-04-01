@@ -7,6 +7,7 @@
 defaults:
   - override /inputs: 
     - oggm_shop
+    - local
   - override /processes: 
     - clim_oggm
     - smb_oggm
