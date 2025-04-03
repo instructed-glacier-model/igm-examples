@@ -1,0 +1,58 @@
+core:
+  url_data: https://www.dropbox.com/scl/fo/kd7dix5j1tm75nj941pvi/h?rlkey=q7jtmf9yn3a970cqygdwne25j&dl=0
+  logging: true
+  logging_level: 30
+
+defaults:
+- override /inputs:
+  - local
+- override /processes:
+  - smb_simple
+  - iceflow
+  - time
+  - thk
+  - vert_flow
+  - particles
+- override /outputs:
+  - write_ncdf
+  - plot2d
+
+inputs:
+  local:
+    folder: data
+    filename: input.nc
+    coarsening:
+      ratio: 1
+
+processes:
+  smb_simple:
+    array:
+    - - time
+      - gradabl
+      - gradacc
+      - ela
+      - accmax
+    - - 1900
+      - 0.009
+      - 0.005
+      - 2800
+      - 2.0
+    - - 2000
+      - 0.009
+      - 0.005
+      - 2900
+      - 2.0
+    - - 2100
+      - 0.009
+      - 0.005
+      - 3300
+      - 2.0
+  time:
+    start: 1900.0
+    end: 2000.0
+    save: 10.0
+  iceflow: {}
+
+outputs:
+  plot2d:
+    live: false

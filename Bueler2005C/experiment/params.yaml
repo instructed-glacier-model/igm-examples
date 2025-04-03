@@ -26,12 +26,14 @@ processes:
     end: 1000.0
     save: 100.0
     cfl: 0.125
-  iceflow: 
-    init_arrhenius: 100.0
-    init_slidingco: 0.01
-    retrain_emulator_nbit: 1
-    retrain_emulator_freq: 1
-    #retrain_emulator_lr: 0.0001
+  iceflow:
+    physics:
+      init_arrhenius: 100.0
+      init_slidingco: 0.01
+    emulator:
+      nbit: 1
+      retrain_freq: 1
+      #retrain_lr: 0.0001
       
     # type: "solved"
     # solve_nbitmax: 10
