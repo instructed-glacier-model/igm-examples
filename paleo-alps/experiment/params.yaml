@@ -26,7 +26,6 @@ defaults:
 
 inputs:
   load_tif:
-    folder: "data"
     coarsen: 2
 
 processes:

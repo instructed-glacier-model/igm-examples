@@ -11,14 +11,14 @@ core:
 
 defaults:
   - override /inputs: 
-    - load_ncdf
+    - local
   - override /processes: 
     - data_assimilation
     - iceflow
 
 inputs:
-  load_ncdf:
-    input_file: data/input.nc
+  local:
+    filename: input.nc
 
 processes:
   iceflow:

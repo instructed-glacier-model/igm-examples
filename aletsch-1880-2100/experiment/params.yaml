@@ -33,7 +33,7 @@ defaults:
 
 inputs:
   load_ncdf:
-    input_file: data/input.nc
+    input_file: input.nc
 
 processes:
   smb_accmelt:

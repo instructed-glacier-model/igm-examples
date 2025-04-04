@@ -32,7 +32,6 @@ defaults:
 
 inputs:
   local:
-     folder: data
      filename: input.nc
      coarsening:
        ratio: 1
