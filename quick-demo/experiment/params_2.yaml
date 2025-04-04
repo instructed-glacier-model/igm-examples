@@ -18,7 +18,7 @@ defaults:
     - vert_flow
     - particles
   - override /outputs: 
-    - write_ncdf
+    - local
     - plot2d
 
 inputs:

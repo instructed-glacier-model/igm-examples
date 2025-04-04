@@ -21,7 +21,7 @@ defaults:
     - thk
   - override /outputs: 
     - plot2d
-    - write_ncdf
+    - local
 #  - override /hydra/launcher: joblib
 
 inputs:

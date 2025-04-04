@@ -20,7 +20,7 @@ defaults:
     - vert_flow
     - particles
   - override /outputs: 
-    - write_ncdf
+    - local
     - plot2d
 
   # - override /hydra/launcher: joblib # no error but does not seem to work compared to if you call it on the command line...

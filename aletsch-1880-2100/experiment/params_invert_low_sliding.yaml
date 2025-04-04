@@ -5,7 +5,7 @@ core:
 
 defaults:
   - override /inputs: 
-     - load_ncdf
+     - local
   - override /processes: 
      - iceflow
 
@@ -16,7 +16,7 @@ defaults:
 #     chdir: True
 
 inputs:
-  load_ncdf:
+  local:
     lncd_input_file: data/input.nc
 
 processes:

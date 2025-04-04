@@ -15,7 +15,7 @@ defaults:
     - time
     - thk
   - override /outputs: 
-    - write_ncdf
+    - local
     - plot2d
 
 inputs:

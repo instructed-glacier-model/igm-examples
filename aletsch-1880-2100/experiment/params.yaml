@@ -10,7 +10,7 @@ defaults:
   - /user/conf/processes@processes.track_usurf_obs: track_usurf_obs
 
   - override /inputs: 
-     - load_ncdf
+     - local
   - override /processes: 
      - track_usurf_obs
      - clim_aletsch
@@ -22,7 +22,7 @@ defaults:
      - vert_flow
      - particles
   - override /outputs: 
-     - write_ncdf
+     - local
      - plot2d
 
 # hydra:
@@ -32,8 +32,8 @@ defaults:
 #     chdir: True
 
 inputs:
-  load_ncdf:
-    input_file: input.nc
+  local:
+    filename: input.nc
 
 processes:
   smb_accmelt:

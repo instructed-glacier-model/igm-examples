@@ -5,7 +5,7 @@ core:
 
 defaults:
   - override /inputs: 
-     - load_ncdf
+     - local
   - override /processes: 
      - iceflow
 
@@ -16,11 +16,11 @@ defaults:
 #     chdir: True
 
 inputs:
-  load_ncdf:
-    input_file: data/input.nc
+  local:
+    filename: input.nc
 
 processes:
-  iceflow:
+  physics:
     iceflow:
       run_data_assimilation: True
       init_slidingco: 0.045

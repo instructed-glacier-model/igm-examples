@@ -17,7 +17,7 @@ defaults:
     - time
     - thk
   - override /outputs: 
-    - write_ncdf
+    - local
     - plot2d
 
 processes:
@@ -44,7 +44,7 @@ processes:
 outputs:
   plot2d:
     live: false
-  write_ncdf:
+  local:
     vars_to_save: 
       - topg
       - usurf
