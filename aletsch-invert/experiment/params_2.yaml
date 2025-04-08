@@ -37,6 +37,8 @@ processes:
       - thk
       - usurf
       - divfluxfcz
+    optimization:
+      nbitmax: 1000
     fitting:
        usurfobs_std: 0.3
        velsurfobs_std: 0.25
@@ -47,4 +49,3 @@ processes:
        slidingco: 1.0e6
        smooth_anisotropy_factor: 1.0
        convexity_weight: 0.0
-    nbitmax: 1000
