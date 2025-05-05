@@ -1,0 +1,69 @@
+# @package _global_
+
+core:
+  hardware:
+    visible_gpus: [0]
+
+defaults:
+  - override /inputs: 
+    - local
+  - override /processes: 
+    - data_assimilation
+    - iceflow
+ 
+processes:
+  iceflow:
+    numerics:
+      Nz: 2
+    physics:
+      init_slidingco: 0.045
+      init_arrhenius: 10
+    emulator: 
+      pretrained: false
+      retrain_freq: 100
+      warm_up_it: 0
+      nbit_init: 1000
+      lr_init: 0.001
+      lr: 0.001
+      lr_decay: 1.0
+      nbit: 500
+      network: 
+        nb_layers: 6
+        nb_out_filter: 16
+        conv_ker_size: 3
+  data_assimilation:
+    control_list: 
+      - slidingco
+    cost_list:
+      - velsurf
+      - icemask
+    optimization:
+      nbitmax: 2000
+      step_size: 1.0
+      retrain_iceflow_model: true
+      fix_opti_normalization_issue: true
+      obstacle_constraint: ['reproject']
+      step_size_decay: 1.0
+#     sole_mask: True
+      pertubate: True
+    fitting:
+      velsurfobs_std: 1.0
+      log_slidingco: True
+    regularization:
+      slidingco: 1.0e+9
+      smooth_anisotropy_factor: 1.0
+      convexity_weight: 0.0
+    scaling:
+      slidingco: 1.0e-7
+    output:
+      plot2d_live: false
+      vars_to_save:
+        - usurf
+        - thk
+        - slidingco
+        - velbase_mag
+        - velsurf_mag
+        - velsurfobs_mag
+        - divflux
+        - icemask
+        - arrhenius
