@@ -74,6 +74,9 @@ def  initialize(cfg,state):
         tf.zeros((len(state.prec), state.y.shape[0], state.x.shape[0])),
         dtype="float32",
     )
+
+    state.meanprec = tf.math.reduce_mean(state.precipitation, axis=0)
+    state.meantemp = tf.math.reduce_mean(state.air_temp, axis=0)
     
     if "time" not in cfg.processes:
         raise ValueError("The 'time' module is required for the 'clim_aletsch' module.")
