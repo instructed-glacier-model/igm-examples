@@ -24,7 +24,6 @@ defaults:
 inputs:
   oggm_shop:
     RGI_ID: "RGI60-11.01450"
-    RGI_version: 6
 
 processes:
   time:
