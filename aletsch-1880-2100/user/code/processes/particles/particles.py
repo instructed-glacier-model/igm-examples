@@ -43,4 +43,4 @@ def seeding_particles(cfg, state):
     state.nparticle_topg = state.topg[I]  # z position of the bedrock under the particle
 
 # override the official seeding_particles function
-igm.processes.particles.particles.seeding_particles = seeding_particles
+igm.processes.particles.update_tf.seeding_particles = seeding_particles
