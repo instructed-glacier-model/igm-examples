@@ -50,6 +50,7 @@ processes:
     frequency_seeding: 500
     tracking_method: simple
     density_seeding: 1
+    seeding_method: "user"
 
 outputs:
   plot2d:
