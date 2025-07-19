@@ -36,15 +36,13 @@ def seeding_particles(cfg, state):
     state.nparticle["x"] = state.X[I] - state.x[0]  # x position of the particle
     state.nparticle["y"] = state.Y[I] - state.y[0]  # y position of the particle
     state.nparticle["z"] = state.usurf[I]           # z position of the particle
-    state.nparticle["thk"] = state.thk[I]           # ice thickness at position of the particle
-    state.nparticle["topg"] = state.topg[I]         # z position of the bedrock under the particle
 
     state.nparticle["t"] = tf.ones_like(state.nparticle["x"]) * state.t
-    state.nparticle["r"] = (state.nparticle["z"] - state.nparticle["topg"]) / state.nparticle["thk"]
-    state.nparticle["r"] = tf.where(state.nparticle["thk"] == 0, tf.ones_like(state.nparticle["r"]), state.nparticle["r"])
+    state.nparticle["r"] = (state.nparticle["z"] - state.topg[I]) / state.thk[I]
+    state.nparticle["r"] = tf.where(state.thk[I] == 0, tf.ones_like(state.nparticle["r"]), state.nparticle["r"])
 
-    if "weights" in cfg.processes.particles.fields:
-        state.nparticle["w"] = tf.ones_like(state.nparticle["x"])
+    if "weight" in cfg.processes.particles.fields:
+        state.nparticle["weight"] = tf.ones_like(state.nparticle["x"])
     if "englt" in cfg.processes.particles.fields:
         state.nparticle["englt"] = tf.zeros_like(state.nparticle["x"])
     if "velmag" in cfg.processes.particles.fields:
