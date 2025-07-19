@@ -4,9 +4,7 @@
 # Published under the GNU GPL (Version 3), check at the LICENSE file
 
 import numpy as np
-import os, sys, shutil
-import matplotlib.pyplot as plt
-import datetime, time
+import os
 import tensorflow as tf
 from netCDF4 import Dataset
 import igm 
@@ -41,12 +39,15 @@ def seeding_particles(cfg, state):
     state.nparticle["r"] = (state.nparticle["z"] - state.topg[I]) / state.thk[I]
     state.nparticle["r"] = tf.where(state.thk[I] == 0, tf.ones_like(state.nparticle["r"]), state.nparticle["r"])
 
-    if "weight" in cfg.processes.particles.fields:
+    if "weight" in cfg.processes.particles.output.add_fields:
         state.nparticle["weight"] = tf.ones_like(state.nparticle["x"])
-    if "englt" in cfg.processes.particles.fields:
+    if "englt" in cfg.processes.particles.output.add_fields:
         state.nparticle["englt"] = tf.zeros_like(state.nparticle["x"])
-    if "velmag" in cfg.processes.particles.fields:
+    if "velmag" in cfg.processes.particles.output.add_fields:
         state.nparticle["velmag"] = tf.zeros_like(state.nparticle["x"])
+
+    id = 0 if state.particle["id"].shape[0] == 0 else state.particle["id"][-1]
+    state.nparticle["id"] = tf.range(id, id + state.nparticle["x"].shape[0])
 
 
 # override the official seeding_particles function

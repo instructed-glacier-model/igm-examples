@@ -47,10 +47,12 @@ processes:
     end: 2020.0
     save: 1.0
   particles:
-    frequency_seeding: 500
-    tracking_method: simple
-    density_seeding: 1
-    seeding_method: "user"
+    seeding: 
+       method: "user"
+       frequency: 500
+       density: 1
+    tracking:
+       method: simple
 
 outputs:
   plot2d:
