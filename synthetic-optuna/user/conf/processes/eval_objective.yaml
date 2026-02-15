@@ -1,0 +1,3 @@
+target_volume: 18.0      # target final ice volume (km^3)
+target_max_speed: 200.0  # target final max surface speed (m/y)
+target_max_thk: 300.0    # target final max ice thickness (m)

@@ -1,0 +1,30 @@
+# @package _global_
+
+defaults:
+  - /user/conf/inputs@inputs.synthetic: synthetic
+  - /user/conf/processes@processes.eval_objective: eval_objective
+  - override /inputs:
+    - synthetic
+  - override /processes:
+    - smb_simple
+    - iceflow
+    - time
+    - thk
+    - eval_objective
+  - override /outputs:
+    - local
+
+processes:
+  time:
+    start: 2000.0
+    end: 2300.0
+    save: 50.0
+  iceflow:
+    physics:
+      init_slidingco: 0.25
+    emulator:
+      exclude_borders: 10
+  smb_simple:
+    array:
+      - ["time", "gradabl", "gradacc", "ela", "accmax"]
+      - [ 2000,      0.009,     0.005,  2800,      2.0]
