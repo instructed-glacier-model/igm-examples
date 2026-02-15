@@ -20,7 +20,7 @@ defaults:
 
 inputs:
   oggm_shop:
-    RGI_ID: "RGI60-11.01450"
+    RGI_ID: "RGI2000-v7.0-G-11-02596"
 
 processes:
   time:
