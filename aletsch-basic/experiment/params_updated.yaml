@@ -1,7 +1,7 @@
 core:
   url_data: https://www.dropbox.com/scl/fo/kd7dix5j1tm75nj941pvi/h?rlkey=q7jtmf9yn3a970cqygdwne25j&dl=0
   logging: true
-  logging_level: 30
+  tf_logging_level: 30
 
 defaults:
 - override /inputs:
