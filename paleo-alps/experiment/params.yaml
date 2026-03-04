@@ -2,13 +2,7 @@
 
 core:
   url_data: https://www.dropbox.com/scl/fi/7pib29dhsuo2t80yplu2j/paleo-alps-v1.zip?rlkey=jsyz0qseyv9jqk63vz3lk6mf0&dl=0
-  logging: True
-  print_params: True
-
-# hydra:
-#   job:
-#     chdir: True
-
+ 
 defaults:
   - /user/conf/processes@processes.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
   

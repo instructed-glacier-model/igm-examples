@@ -1,0 +1,42 @@
+# @package _global_
+
+# Step 5: Optuna parameter optimization
+# Uses the Optuna sweeper to find optimal weight_accumulation and weight_ablation
+# parameters that minimize the misfit with observed DEMs (mean STD from track_usurf_obs).
+# Run with: igm_run -m +experiment=params_step5 hydra/sweeper=igm_optuna
+# Or without Optuna (single run): igm_run +experiment=params_step5
+
+core:
+  url_data: "https://www.dropbox.com/scl/fo/8ixpy27i67s04bp7uixoq/h?rlkey=0ye7rd4zkcqfhvzx7suunw3bk&dl=0"
+
+defaults:
+  - /user/conf/processes@processes.smb_accmelt: smb_accmelt
+  - /user/conf/processes@processes.clim_aletsch: clim_aletsch
+  - /user/conf/processes@processes.track_usurf_obs: track_usurf_obs
+
+  - override /inputs:
+    - local
+  - override /processes:
+    - track_usurf_obs
+    - clim_aletsch
+    - smb_accmelt
+    - iceflow
+    - time
+    - thk
+
+inputs:
+  local:
+    filename: input.nc
+
+processes:
+  smb_accmelt:
+    weight_accumulation: 1.062
+    weight_ablation: 1.304
+  iceflow:
+    physics:
+      init_slidingco: 0.0595
+  time:
+    start: 1880.0
+    end: 2020.0
+    save: 10.0
+

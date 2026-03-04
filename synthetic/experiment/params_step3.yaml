@@ -1,0 +1,34 @@
+# @package _global_
+
+# Step 3: Optuna parameter optimization
+# Uses the Optuna sweeper to find optimal sliding coefficient and ELA
+# that match target ice volume and surface speed.
+# Run with: igm_run -m +experiment=params_step3 hydra/sweeper=igm_optuna
+# Or without Optuna (single run): igm_run +experiment=params_step3
+
+defaults:
+  - /user/conf/inputs@inputs.synthetic: synthetic
+  - /user/conf/processes@processes.eval_objective: eval_objective
+  - override /inputs:
+    - synthetic
+  - override /processes:
+    - smb_simple
+    - iceflow
+    - time
+    - thk
+    - eval_objective
+    
+processes:
+  time:
+    start: 2000.0
+    end: 2300.0
+    save: 50.0
+  iceflow:
+    physics:
+      init_slidingco: 0.25
+    emulator:
+      exclude_borders: 10
+  smb_simple:
+    array:
+      - ["time", "gradabl", "gradacc", "ela", "accmax"]
+      - [ 2000,      0.009,     0.005,  2800,      2.0]

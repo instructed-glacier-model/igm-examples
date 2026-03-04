@@ -1,40 +1,49 @@
-# Overview
+# IGM Examples
 
-This repository contains several simple IGM examples to help you become familiar with IGM.
+This repository contains several IGM examples to help you become familiar with IGM.
 
 Each folder is organized to separate data, parameters, and user functions:
 ```
-├── data
-│   ├── ....
-├── experiment 
-│   └── params.yaml
-└── user
-    ├── code
-    │   └── processes
-    │       └── usermodule
-    └── conf
-        └── processes
-            └── usermodule.yaml 
+example-name/
+├── data/                # Input data (NetCDF files, climate data)
+├── experiment/          # Hydra YAML config files (params.yaml, ...)
+└── user/
+    ├── code/
+    │   ├── inputs/      # Custom input modules
+    │   └── processes/   # Custom process modules
+    └── conf/
+        ├── inputs/      # YAML configs for custom input modules
+        └── processes/   # YAML configs for custom process modules
 ```
 
-Usage: After installing IGM, navigate to the example folder of interest, and run:
+## Usage
+
+After installing IGM, navigate to the example folder of interest, and run:
 ```bash
 igm_run +experiment=params
 ```
 This command will create a new directory named `outputs` to store the model results.
 
-You may run the following examples (listed in order of complexity):
+**Tip:** Prefix any command with `TF_CPP_MIN_LOG_LEVEL=3` to suppress verbose TensorFlow messages:
+```bash
+TF_CPP_MIN_LOG_LEVEL=3 igm_run +experiment=params
+```
 
-- `quick-demo` offers a setup to model any glacier given an RGI ID, using OGGM-based climate forcing and SMB. It also provides an example to include a custom user-defined SMB module/parameterization.
+## Examples 
 
-- `aletsch-basic` provides a straightforward setup for an advance-retreat simulation of the largest glacier in the European Alps -- the Aletsch Glacier in Switzerland -- using a simple mass balance parameterization based on time-varying Equilibrium Line Altitudes (ELA).
+- **`aletsch`** — Step-by-step tutorial for modeling the Great Aletsch Glacier, progressively introducing custom SMB modules, realistic climate forcing, particle tracking, and Optuna parameter optimization.
 
-- `aletsch-1880-2100` provides the setup to reproduce simulations of the Great Aletsch Glacier (Switzerland) for past and future conditions based on the CH2018 climate scenarios and an accumulation/melt model.
+- **`quick-demo`** — Model any glacier given an RGI ID, using OGGM-based climate forcing and SMB.
 
-- `aletsch-invert` provide examples of data assimilation with IGM (Note: inverse modeling requires tuning parameters for each glacier). 
+- **`synthetic`** — Step-by-step tutorial with synthetic bedrock: basic simulation, particle tracking, and Optuna multi-objective optimization.
 
-- `paleo-alps`  consists of a basic setup to run a paleo glacier model for the European Alps during paleo times with different catchments (Lyon, Ticino, Rhine, Linth glaciers) using IGM around the last glacial maximum (LGM, approximately 24 BP in the Alps).
+- **`paleo-alps`** — Paleo glacier modeling for the European Alps around the last glacial maximum (LGM, ~24 ka BP).
 
-- `synthetic` allows you to conduct simple numerical experiments with basic synthetic bedrock topographies.
+## Deprecated Examples
 
+The following examples are kept for reference but are deprecated:
 
+- **`aletsch-invert`** — Data assimilation and inverse modeling examples, this example is outdated, data assimilation is work in progress. 
+- **`Bueler2005C`** — Analytical benchmark (Bueler et al., 2005, test C).
+- **`custom-module-packages`** — Demonstrates Python package-based custom modules.
+- **`instructed_oggm`** — Experimental/legacy OGGM coupling. May not work with current versions.

@@ -1,0 +1,43 @@
+# Optuna config 
+
+# Select which scores (from state.score dict) to optimize, scores must be defined in the model's processes.eval_objective
+objectives:
+  - name: cost_volume
+    direction: minimize
+  - name: cost_speed
+    direction: minimize
+
+n_trials: 100             # total number of trials to run
+n_jobs: 4                 # parallel trials
+gpu_allow_growth: true    # allow GPU memory growth 
+# gpu_ids: [0, 1, 2, 3]    # trial i uses gpu_ids[i % len(gpu_ids)]
+
+storage: sqlite:///optuna.db
+study_name: synthetic
+
+sampler:
+#  method: TPESampler          # Bayesian, fast convergence, good default (1+ obj)
+#  method: NSGAIISampler       # Genetic, good Pareto diversity (2-3 obj)
+  method: NSGAIIISampler       # Genetic, best for 3+ objectives
+#  method: CmaEsSampler        # Covariance-based, best for continuous params (1 obj only)
+#  method: GPSampler           # Gaussian Process surrogate (1 obj only)
+  population_size: 10         # for NSGA-II/III only
+
+# Give the target values for the objectives, used to compute the cost as distance from target 
+overrides:
+  processes.eval_objective.target_volume: 18.0
+  processes.eval_objective.target_max_speed: 200.0
+
+# Control parameters tuned by Optuna
+parameters:
+  - name: processes.iceflow.physics.init_slidingco
+    type: float
+    low: 0.01
+    high: 1.0
+    log: true
+    
+  - name: processes.smb_simple.array.1.3
+    type: float
+    low: 2500.0
+    high: 3200.0
+    log: false

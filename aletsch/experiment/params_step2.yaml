@@ -1,0 +1,37 @@
+# @package _global_
+
+# Step 2: Custom user-defined SMB module
+# Same as Step 1, but replaces the built-in smb_simple with a custom user
+# module (mysmb) that uses a sinusoidal ELA signal. This demonstrates how
+# to write and plug in your own process module.
+
+core:
+  url_data: "https://www.dropbox.com/scl/fo/8ixpy27i67s04bp7uixoq/h?rlkey=0ye7rd4zkcqfhvzx7suunw3bk&dl=0"
+
+defaults:
+  - /user/conf/processes@processes.mysmb: mysmb
+
+  - override /inputs:
+    - local
+  - override /processes:
+    - mysmb
+    - iceflow
+    - time
+    - thk
+  - override /outputs:
+    - local
+    - plot2d
+
+inputs:
+  local:
+    filename: input.nc
+
+processes:
+  time:
+    start: 1900.0
+    end: 2000.0
+    save: 10.0
+
+outputs:
+  plot2d:
+    live: false
