@@ -43,7 +43,11 @@ TF_CPP_MIN_LOG_LEVEL=3 igm_run +experiment=params
 
 The following examples are kept for reference but are deprecated:
 
-- **`aletsch-invert`** — Data assimilation and inverse modeling examples, this example is outdated, data assimilation is work in progress. 
 - **`Bueler2005C`** — Analytical benchmark (Bueler et al., 2005, test C).
 - **`custom-module-packages`** — Demonstrates Python package-based custom modules.
 - **`instructed_oggm`** — Experimental/legacy OGGM coupling. May not work with current versions.
+
+## Inversion / Data Assimilation
+
+The former examples **`aletsch-invert`** was removed (outdated), data assimilation is work in progress. As a temporary solution, you may look at the repo dedicated to data assimilation examples in https://github.com/instructed-glacier-model/igm-examples-invert
+ 
