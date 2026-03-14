@@ -12,7 +12,7 @@ defaults:
     - thk
   - override /outputs: 
     - local
-    - plot2d
+    - live_dashboard
 
 inputs:
   oggm_shop:
@@ -33,7 +33,3 @@ processes:
       - [ 1900,           0.0,         1.0]
       - [ 2020,           0.0,         1.0]
       - [ 2100,           4.0,         1.0]
-      
-outputs:
-  plot2d:
-    live: true

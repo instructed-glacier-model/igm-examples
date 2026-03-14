@@ -20,7 +20,7 @@ defaults:
     - thk
   - override /outputs:
     - local
-    - plot2d
+    - live_dashboard
 
 inputs:
   local:
@@ -32,6 +32,3 @@ processes:
     end: 2000.0
     save: 10.0
 
-outputs:
-  plot2d:
-    live: false
