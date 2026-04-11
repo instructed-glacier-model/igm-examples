@@ -1,5 +1,6 @@
-# Optuna config for Aletsch parameter optimization
-# Optimizes weight_accumulation and weight_ablation to minimize DEM misfit
+# Single-objective Optuna config for Aletsch (Step 5).
+# Optimizes weight_accumulation and weight_ablation to minimize the DEM misfit
+# (mean STD across the 7 historical observation years).
 
 objectives:
   - name: cost_usurf

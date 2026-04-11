@@ -1,0 +1,60 @@
+# Multi-objective Optuna config for Aletsch.
+#
+# Two objectives are minimized simultaneously:
+#   cost_usurf   : mean STD between modelled and observed DEMs (track_usurf_obs)
+#   cost_velsurf : RMSE between modelled and observed surface speeds in 2020
+#
+# Uses the NSGA-II sampler, a genetic algorithm well suited for
+# multi-objective optimization and Pareto-front exploration (the TPE sampler
+# used in Step 5 supports multi-objective but is less effective here).
+
+objectives:
+  - name: cost_usurf
+    direction: minimize
+  - name: cost_velsurf
+    direction: minimize
+
+n_trials: 200
+n_jobs: 4
+gpu_allow_growth: true
+
+storage: sqlite:///optuna_2obj.db
+study_name: aletsch_2obj
+
+# NSGA-II strategy notes:
+#   * population_size=16 with n_trials=200 ⇒ ~12 generations (vs only 4 with
+#     the previous pop=20 / 80 trials), needed for the genetic algorithm to
+#     actually converge a Pareto front
+#   * no fixed seed: avoids the small initial population getting locked-in
+#   * higher mutation_prob keeps diversity over many generations
+sampler:
+  method: NSGAIISampler
+  population_size: 16
+  mutation_prob: 0.1
+  crossover_prob: 0.9
+
+parameters:
+  - name: processes.smb_accmelt.weight_accumulation
+    type: float
+    low: 0.5
+    high: 2.0
+    log: false
+
+  - name: processes.smb_accmelt.weight_ablation
+    type: float
+    low: 0.5
+    high: 2.0
+    log: false
+
+  # `slidingco` here is τ_ref (MPa), the basal shear stress at u_ref = 35 m/yr
+  # (u_ref is set in experiment/params_step6.yaml). Literature values for
+  # temperate alpine valley glaciers like Aletsch sit around 0.08–0.30 MPa
+  # (driving stresses ~0.10–0.20 MPa, with steeper-section peaks); the upper
+  # bound is pushed to 0.50 MPa to give the optimizer some headroom for
+  # plug-flow / sticky-bed regimes that the previous Pareto front was
+  # pressing against.
+  - name: processes.iceflow.physics.init_slidingco
+    type: float
+    low: 0.08
+    high: 0.50
+    log: false

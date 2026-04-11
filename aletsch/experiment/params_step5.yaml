@@ -1,9 +1,13 @@
 # @package _global_
 
-# Step 5: Optuna parameter optimization
+# Step 5: Single-objective Optuna parameter optimization
 # Uses the Optuna sweeper to find optimal weight_accumulation and weight_ablation
 # parameters that minimize the misfit with observed DEMs (mean STD from track_usurf_obs).
-# Run with: igm_run -m +experiment=params_step5 hydra/sweeper=igm_optuna
+# Optimization settings live in optuna_1obj_params.yaml.
+# Run with:
+#   igm_run -m +experiment=params_step5 \
+#           hydra/sweeper=igm_optuna \
+#           hydra.sweeper.optuna_config=optuna_1obj_params.yaml
 # Or without Optuna (single run): igm_run +experiment=params_step5
 
 core:
