@@ -38,7 +38,8 @@ processes:
     weight_ablation: 1.304
   iceflow:
     physics:
-      init_slidingco: 0.0595
+      sliding:
+        slidingco: 0.0595
   time:
     start: 1880.0
     end: 2020.0

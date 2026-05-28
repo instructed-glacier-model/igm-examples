@@ -50,10 +50,9 @@ processes:
       # IS the basal shear stress τ_b (MPa) at that reference speed:
       #     τ_b = slidingco · (|u_b| / u_ref)^(1/m),  m = 3
       # Literature range for a temperate alpine glacier: 0.08–0.30 MPa.
-      init_slidingco: 0.15
       sliding:
-        weertman:
-          u_ref: 35.0
+        slidingco: 0.15
+        u_ref: 35.0
   time:
     start: 1880.0
     end: 2020.0

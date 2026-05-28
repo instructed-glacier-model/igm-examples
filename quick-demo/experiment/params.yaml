@@ -4,13 +4,13 @@ defaults:
   - override /inputs: 
     - oggm_shop
     - local
-  - override /processes: 
-    - clim_oggm
-    - smb_oggm
+  - override /processes:
+    - climate
+    - smb
     - iceflow
     - time
     - thk
-  - override /outputs: 
+  - override /outputs:
     - local
     - live_dashboard
 
@@ -26,10 +26,15 @@ processes:
     save: 10.0
   iceflow:
     physics:
-      init_slidingco: 0.25
-  clim_oggm:
-    clim_trend_array: 
-      - ["time", "delta_temp", "prec_scal"]
-      - [ 1900,           0.0,         1.0]
-      - [ 2020,           0.0,         1.0]
-      - [ 2100,           4.0,         1.0]
+      sliding:
+        slidingco: 0.25
+  climate:
+    method: oggm
+    oggm:
+      clim_trend_array:
+        - ["time", "delta_temp", "prec_scal"]
+        - [ 1900,           0.0,         1.0]
+        - [ 2020,           0.0,         1.0]
+        - [ 2100,           4.0,         1.0]
+  smb:
+    method: oggm

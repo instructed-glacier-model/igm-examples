@@ -12,12 +12,12 @@ defaults:
   - override /inputs:
     - synthetic
   - override /processes:
-    - smb_simple
+    - smb
     - iceflow
     - time
     - thk
     - eval_objective
-    
+
 processes:
   time:
     start: 2000.0
@@ -25,10 +25,13 @@ processes:
     save: 50.0
   iceflow:
     physics:
-      init_slidingco: 0.25
+      sliding:
+        slidingco: 0.25
     emulator:
       exclude_borders: 10
-  smb_simple:
-    array:
-      - ["time", "gradabl", "gradacc", "ela", "accmax"]
-      - [ 2000,      0.009,     0.005,  2800,      2.0]
+  smb:
+    method: simple
+    simple:
+      array:
+        - ["time", "gradabl", "gradacc", "ela", "accmax"]
+        - [ 2000,      0.009,     0.005,  2800,      2.0]
