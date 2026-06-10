@@ -44,15 +44,43 @@ processes:
   smb_accmelt:
     weight_accumulation: 1.062
     weight_ablation: 1.304
+  # Unified iceflow with the dahunet (SIA-informed) emulator, trained online
+  # from scratch. Replaces the deprecated `emulated` mode + NiceNet network.
   iceflow:
+    method: unified
     physics:
-      # With u_ref = 35 m/yr (a typical basal speed for Aletsch), `slidingco`
+      # With u_ref = 35 m/yr (a typical basal speed for Aletsch), `tau_ref`
       # IS the basal shear stress τ_b (MPa) at that reference speed:
-      #     τ_b = slidingco · (|u_b| / u_ref)^(1/m),  m = 3
+      #     τ_b = tau_ref · (|u_b| / u_ref)^(1/m),  m = 3
       # Literature range for a temperate alpine glacier: 0.08–0.30 MPa.
       sliding:
-        slidingco: 0.15
+        tau_ref: 0.15     # was slidingco (renamed on the new unified stack)
         u_ref: 35.0
+    emulator:
+      network:
+        params:
+          backend: cnn
+          features: [dsdx, dsdy, grad_s, u_sia, u_weertman]
+          nb_out_filter: 32
+          nb_layers: 16
+          conv_ker_size: 3
+          residual: true
+    unified:
+      mapping: network
+      inputs: [thk, usurf, arrhenius, tau_ref, dX]
+      network:
+        pretrained: false
+        architecture: dahunet
+      optimizer: adam
+      adam:
+        lr: 5.0e-04
+        lr_init: 1.0e-03
+      nbit_init: 500
+      nbit: 1
+      nbit_warmup: -1
+      retrain_freq: 1
+      data_preparation:
+        framesizemax: 99999
   time:
     start: 1880.0
     end: 2020.0

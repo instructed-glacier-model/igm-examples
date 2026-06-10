@@ -23,12 +23,38 @@ processes:
     start: 2000.0
     end: 2300.0
     save: 50.0
+  # Unified iceflow with the dahunet (SIA-informed) emulator, trained online
+  # from scratch. Replaces the deprecated `emulated` mode + NiceNet network.
   iceflow:
+    method: unified
     physics:
       sliding:
-        slidingco: 0.25
+        tau_ref: 0.25     # was slidingco (renamed on the new unified stack)
     emulator:
-      exclude_borders: 10
+      network:
+        params:
+          backend: cnn
+          features: [dsdx, dsdy, grad_s, u_sia, u_weertman]
+          nb_out_filter: 32
+          nb_layers: 16
+          conv_ker_size: 3
+          residual: true
+    unified:
+      mapping: network
+      inputs: [thk, usurf, arrhenius, tau_ref, dX]
+      network:
+        pretrained: false
+        architecture: dahunet
+      optimizer: adam
+      adam:
+        lr: 5.0e-04
+        lr_init: 1.0e-03
+      nbit_init: 500
+      nbit: 1
+      nbit_warmup: -1
+      retrain_freq: 1
+      data_preparation:
+        framesizemax: 99999
   smb:
     method: simple
     simple:

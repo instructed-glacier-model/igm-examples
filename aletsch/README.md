@@ -101,7 +101,7 @@ Same model as Step 5, but optimizes **two** objectives simultaneously:
 
 The velocity score is computed by a new dedicated user module, `track_velsurf_obs`, which compares modelled and observed surface speeds at the final time step following the spirit of the `misfit_velsurf` cost term of IGM's `data_assimilation` module (threshold on observed speed, valid pixels only).
 
-A dedicated config `optuna_2obj_params.yaml` declares the two objectives and switches the sampler from **TPE** (used in Step 5) to **NSGA-II**, a genetic algorithm well suited for Pareto-front exploration. It adds `init_slidingco` as a third free parameter, sweeping it over the physically meaningful range `[0.08, 0.50] MPa` (the Weertman reference velocity is fixed to `u_ref = 35 m/yr` so that `init_slidingco` *is* the basal shear stress at a typical Aletsch trunk speed).
+A dedicated config `optuna_2obj_params.yaml` declares the two objectives and switches the sampler from **TPE** (used in Step 5) to **NSGA-II**, a genetic algorithm well suited for Pareto-front exploration. It adds `tau_ref` as a third free parameter, sweeping it over the physically meaningful range `[0.08, 0.50] MPa` (the Weertman reference velocity is fixed to `u_ref = 35 m/yr` so that `tau_ref` *is* the basal shear stress at a typical Aletsch trunk speed).
 
 ```bash
 # Single run (no optimization):

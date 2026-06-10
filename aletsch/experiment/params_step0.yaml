@@ -53,5 +53,5 @@ processes:
       nbit_init: -1
       retrain_freq: 1000000000000
       network:
-        pretrained_path: /home/srosier/work/igm3/igm/processes/iceflow/emulate/emulators/dahunet_mini.keras
+        pretrained_path: "dahunet_mini.keras"   # shipped inside the igm package
         pretrained: true

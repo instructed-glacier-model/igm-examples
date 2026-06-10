@@ -46,14 +46,14 @@ parameters:
     high: 2.0
     log: false
 
-  # `slidingco` here is τ_ref (MPa), the basal shear stress at u_ref = 35 m/yr
+  # `tau_ref` is the basal shear stress τ_ref (MPa) at u_ref = 35 m/yr
   # (u_ref is set in experiment/params_step6.yaml). Literature values for
   # temperate alpine valley glaciers like Aletsch sit around 0.08–0.30 MPa
   # (driving stresses ~0.10–0.20 MPa, with steeper-section peaks); the upper
   # bound is pushed to 0.50 MPa to give the optimizer some headroom for
   # plug-flow / sticky-bed regimes that the previous Pareto front was
   # pressing against.
-  - name: processes.iceflow.physics.init_slidingco
+  - name: processes.iceflow.physics.sliding.tau_ref
     type: float
     low: 0.08
     high: 0.50

@@ -34,7 +34,12 @@ def initialize(cfg,state):
     nc.close()
 
     state.usurf = vars(state)['surf_'+str(int(cfg.processes.time.start))]
-    state.thk   = state.usurf -state.topg
+    # Clamp to non-negative thickness: the observed 1880 surface can sit a few
+    # metres below the bedrock estimate, giving spurious negative thk. The new
+    # dahunet emulator builds log((grad_s)^3 * thk^3 + ...) features, so a
+    # negative thk makes the argument of log() negative -> NaN velocities.
+    state.thk   = tf.maximum(state.usurf - state.topg, 0.0)
+    state.usurf = state.topg + state.thk
 
     state.track_stds = []
     state.obs_years = [1880,1926,1957,1980,1999,2009,2017]

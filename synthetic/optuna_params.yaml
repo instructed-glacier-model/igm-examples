@@ -30,7 +30,7 @@ overrides:
 
 # Control parameters tuned by Optuna
 parameters:
-  - name: processes.iceflow.physics.init_slidingco
+  - name: processes.iceflow.physics.sliding.tau_ref
     type: float
     low: 0.01
     high: 1.0
