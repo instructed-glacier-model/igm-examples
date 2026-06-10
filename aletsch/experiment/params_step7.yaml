@@ -1,0 +1,61 @@
+# @package _global_
+
+# Step 7: Inversion of ice thickness using observations of surface ice velocity
+#
+# Uses the field_inversion module to invert for ice thickness
+# Input data includes a true thickness field, for comparison with the inverted thickness
+# IGM is run forwards in time with a predefined thickness field to obtain ice velocities
+# These ice velocities can then be used as synthetic observations to validate the inversion.
+#
+# Run with:
+#   igm_run -m +experiment=params_step7 \
+
+defaults:
+  - /user/conf/outputs@outputs.inverse_accuracy: inverse_accuracy
+
+  - override /inputs:
+    - load_ncdf
+  - override /processes:
+    - iceflow
+  - override /assimilations:
+    - field_inversion
+  - override /outputs:
+    - write_ncdf
+    - inverse_accuracy
+
+inputs:
+  load_ncdf:
+    input_file: inverse_250m.nc
+processes:
+  iceflow:
+    physics:
+      sliding:
+        tau_ref: 0.0323 # <----- ensure this is the same as the value used in the input file since here we are not trying to invert for tau_ref but only for thk
+        u_ref: 1.0
+    numerics:
+      Nz: 2
+      basis_vertical: molho
+      basis_horizontal : q1
+    method: unified
+    unified:
+      display:
+        print_cost: true
+      mapping: network
+      optimizer: lbfgs
+      line_search: hager-zhang
+      nbit: -1
+      nbit_warmup: -1
+      nbit_init: -1
+      retrain_freq: 1000000
+      network:
+        pretrained_path: "dahunet_mini.keras"  # shipped inside the igm package
+        pretrained: true
+assimilations:
+  field_inversion:
+    variables:
+    - { name: thk, transform: identity,  lower_bound: 0.0 , upper_bound: 1000.0}
+    objective:
+      misfit:
+        - { name: velsurf, kind: gaussian, components: [uvelsurf, vvelsurf], obs: [uvelsurfobs, vvelsurfobs], std: 1.0 }
+      regularization:
+        - { name: thk, penalty: squared_laplacian, lam: 1000000.0, ref: usurf}
