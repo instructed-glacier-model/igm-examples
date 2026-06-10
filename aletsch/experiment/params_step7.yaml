@@ -56,6 +56,6 @@ assimilations:
     - { name: thk, transform: identity,  lower_bound: 0.0 , upper_bound: 1000.0}
     objective:
       misfit:
-        - { name: velsurf, kind: gaussian, components: [uvelsurf, vvelsurf], obs: [uvelsurfobs, vvelsurfobs], std: 1.0 }
+        - { name: velsurf, kind: huber, components: [uvelsurf, vvelsurf], obs: [uvelsurfobs, vvelsurfobs], std: 1.0 }
       regularization:
         - { name: thk, penalty: squared_laplacian, lam: 1000000.0, ref: usurf}
