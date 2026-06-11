@@ -1,6 +1,10 @@
 __pycache__
-outputs
+outputs/
+!**/code/outputs/
+!**/conf/outputs/
 multiruns
 RGI60-11.01450
 input.nc
 CLAUDE.md
+!*/code/outputs/
+!*/conf/outputs/
