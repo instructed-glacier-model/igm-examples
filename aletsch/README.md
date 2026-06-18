@@ -158,6 +158,36 @@ igm_run +experiment=params_step7
 
 Results are saved in a timestamped subfolder under `outputs/`. The run writes the inverted fields to `output.nc` (open with `ncview` or any NetCDF viewer) alongside the `inverse_accuracy` diagnostics comparing inverted and true thickness. The simulation also produces two figures comparing thickness and surface velocity misfit.
 
+### Step 8: Data assimilation by time relaxation (`params_step8.yaml`)
+
+A different flavour of data assimilation from Step 7. Instead of a one-shot inversion, this step uses IGM's **`time_relaxation`** assimilation module (*forward time-relaxation data assimilation*, original implementation by **T. Frank**): the forward ice-flow model is integrated for **500 years** while a few **control fields are nudged a little at every time step**, so the modelled glacier slowly relaxes onto the observations. By the end, geometry, mass balance and velocity are mutually consistent and match the data.
+
+**The method.** `time_relaxation` is fully generic — a run is a list of independent `steps`, each an orthogonal triple `(residual, update law, control)`. A control field `C` is nudged so a residual `r` between a modelled quantity `M` and a target `T` is driven toward zero (`C ← Φ(C, r, α, Δt)`; additive / multiplicative / replace update laws; linear / relative / log-ratio residuals). The whole inner loop runs inside the module, which *replaces* the usual `time` module. This single driver reproduces several classical methods (PISM force-to-thickness, friction inversion, AMB bed inversion) just by changing the YAML.
+
+**What this example fits.** Three steps run together:
+
+| Control nudged | Driven to match | Step |
+|---|---|---|
+| `thk` (ice thickness) | flux divergence `divflux` → apparent mass balance `amb = smb − dhdt_obs` | `amb_thk` |
+| `usurf` (surface elevation) | same shared AMB residual `(amb − divflux)` | `amb_usurf` |
+| `tau_ref` (basal friction) | observed surface speed `velsurf_magobs` | `friction` |
+
+The first two are the **apparent-mass-balance bed inversion** of *Frank & van Pelt (2025)*: `thk` and `usurf` are perturbed jointly (sharing one linear residual) until the modelled flux divergence equals the apparent mass balance `amb = smb − dhdt_obs`. When `divflux ≈ amb`, the modelled `dhdt` matches the observed `dhdt_obs` — the glacier is in its observed transient state. The third is a classic friction inversion nudging `tau_ref` until modelled `velsurf_mag` matches the observed surface speed; it runs on a slow cadence (every 62 yr) and is scheduled to stop early (`end_time: 450`) so its last kick has settled ≥ 60 yr before the run ends (the kicks excite a divflux transient that decays over ~30–50 yr).
+
+```bash
+igm_run +experiment=params_step8
+```
+
+The forward model is the `unified` iceflow stack with a from-scratch `dahunet` emulator. Inputs come from `data/input_with_dhdt.nc` (geometry + observations: `thk`, `usurf`, `dhdt`, `uvelsurfobs`/`vvelsurfobs`, `thkobs`, `icemask`). The run writes:
+
+- `output.nc` — 11 snapshots (`t = 0, 50, …, 500 yr`) of `thk, usurf, tau_ref, velsurf_mag, velsurf_magobs, divflux, amb, dhdt, dhdt_obs, …`;
+- `output_ts.nc` — area/volume time series; `misfits.csv` — per-save residual norms;
+- `fit_dashboard/fit_t<TIME>.png` + `fit_evolution.gif` — a **live 8-panel fit dashboard** (rendered each save by the `fit_dashboard` post-process): row 1 surface speed (obs / model / residual) + the `tau_ref` control map, row 2 apparent mass balance (target `amb` / modelled `divflux` / residual) + a live RMSE-convergence curve. Colour scales are fixed from the observations so frames are directly comparable as the model relaxes onto the data. Headless-safe (Agg, frames only); set `assimilations.time_relaxation.viz.show: true` for an interactive window.
+
+The custom `eval_objective` module prints three fit scores at the end (and exposes them as `state.score` for Optuna): `rmse_divflux_minus_amb` (AMB fit, m/yr), `rmse_vel` (surface-speed fit, m/yr) and `rmse_thk` (vs radar `thkobs`, m) — a converged run lands around `1.18 / 12.7 / 112`.
+
+> **Note:** `time_relaxation` and `field_inversion` (Step 7) are two complementary assimilation routes. Step 7 solves a single bounded optimisation for one field (`thk`); Step 8 nudges several fields jointly inside a transient forward run, fitting mass balance *and* velocity at once.
+
 ## Visualization tools
 
 Two standalone post-processing scripts live in `tools/` and are independent of IGM itself (they only depend on `numpy`, `matplotlib`, `netCDF4`, and `optuna`):
@@ -179,6 +209,8 @@ Both scripts accept `--help` for the full list of options.
 | `track_usurf_obs` | Compares modelled vs observed surface; writes `cost_usurf` to `state.score` (Steps 3-6) |
 | `track_velsurf_obs` | Compares modelled vs observed surface speeds at the final time step; writes `cost_velsurf` to `state.score` (Step 6) |
 | `particles` | Custom particle seeding from spatial map (Step 4) |
+| `eval_objective` | Final fit scores for the time-relaxation run (`rmse_divflux_minus_amb`, `rmse_vel`, `rmse_thk`) → `state.score` (Step 8) |
+| `fit_dashboard` | Live 8-panel fit dashboard rendered each save by `time_relaxation` (Step 8) |
 
 ## Data
 
@@ -190,3 +222,4 @@ Input data is automatically downloaded on first run. It includes:
 - `mbparameter.dat` — mass balance parameters
 - `bassin.nc` — basin masks
 - `seeding.nc` — particle seeding map
+- `input_with_dhdt.nc` — geometry + observations for the time-relaxation assimilation (`dhdt`, surface-velocity obs, `thkobs`, `icemask`) (Step 8)

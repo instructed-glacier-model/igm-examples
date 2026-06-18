@@ -1,0 +1,8 @@
+# fit_dashboard — live time_relaxation fit dashboard (USER module; moved out of
+# igm core). No functional params here: the viz options (show, dpi, title) are
+# read from assimilations.time_relaxation.viz. This file only exists so the
+# `override /processes: [..., fit_dashboard]` entry resolves as a hydra group.
+# The module is listed in /processes purely to trigger loading + the
+# sys.modules['igm.processes.fit_dashboard'] alias; it draws frames via
+# time_relaxation.post_processes. See user/code/processes/fit_dashboard/.
+enabled: true
