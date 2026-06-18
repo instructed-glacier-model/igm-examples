@@ -9,6 +9,10 @@ outputs/
 !**/user/conf/outputs/**
 # but keep __pycache__ ignored even under the re-included module dirs
 **/__pycache__/
+# ...and never track Hydra run-output dirs (YYYY-MM-DD/) that may accidentally
+# land under a user module dir
+**/user/code/outputs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
+**/user/conf/outputs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
 multiruns
 # OGGM download caches (oggm_shop writes data/<RGI_ID>/...)
 RGI60-*
