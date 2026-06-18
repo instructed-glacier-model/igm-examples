@@ -44,7 +44,6 @@ TF_CPP_MIN_LOG_LEVEL=3 igm_run +experiment=params
 The following examples are kept for reference but are deprecated:
 
 - **`Bueler2005C`** — Analytical benchmark (Bueler et al., 2005, test C).
-- **`custom-module-packages`** — Demonstrates Python package-based custom modules.
 - **`instructed_oggm`** — Experimental/legacy OGGM coupling. May not work with current versions.
 
 ## Inversion / Data Assimilation
