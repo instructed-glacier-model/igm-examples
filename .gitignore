@@ -14,4 +14,6 @@ multiruns
 RGI60-*
 RGI2000-*
 input.nc
+# aletsch ships its input.nc in-repo (download link retired); keep it tracked
+!aletsch/data/input.nc
 CLAUDE.md
