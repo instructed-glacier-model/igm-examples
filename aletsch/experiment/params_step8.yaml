@@ -42,13 +42,13 @@ defaults:
 
   - override /inputs:
       - local
+  - override /assimilations:
+      - time_relaxation
   - override /processes:
       - iceflow
       - smb
       - eval_objective
       - fit_dashboard
-  - override /assimilations:
-      - time_relaxation
   - override /outputs:
       - write_ncdf
       - write_ts

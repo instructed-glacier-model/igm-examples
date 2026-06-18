@@ -158,7 +158,7 @@ def _build_artists(d, fields, icemask, vsel):
     afin = fields["amb"][np.isfinite(fields["amb"])]
     alim = float(np.nanpercentile(np.abs(afin), 98)) if afin.size else 5.0
     alim = alim if alim > 0 else 5.0
-    alim *= d.get("amb_scale", 10.0)        # enlarge AMB-row range (default 10x)
+    alim *= d.get("amb_scale", 2.0)        # enlarge AMB-row range (default 2x)
     scales = {
         "vobs": (0, vlim), "vmod": (0, vlim), "vres": (-vlim / 2, vlim / 2),
         "amb": (-alim, alim), "dflx": (-alim, alim), "ares": (-alim / 2, alim / 2),
