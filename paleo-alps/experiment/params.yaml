@@ -7,7 +7,7 @@ core:
   check_module_needs: false
 
 defaults:
-  - /user/conf/processes@processes.smb_signal: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
+  - /user/conf/processes@processes: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
   
   - override /inputs: 
     - load_tif

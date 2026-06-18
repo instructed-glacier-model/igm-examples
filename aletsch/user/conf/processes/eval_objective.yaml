@@ -1,5 +1,6 @@
-# Value substituted into state.score when a metric is NaN (e.g. no
-# thkobs available, or velocity obs missing). Large enough to be
-# Pareto-dominated by any realistic run so Optuna drops broken trials
-# to the back of the front without discarding them.
-nan_penalty: 1.0e4
+eval_objective:
+  # Value substituted into state.score when a metric is NaN (e.g. no
+  # thkobs available, or velocity obs missing). Large enough to be
+  # Pareto-dominated by any realistic run so Optuna drops broken trials
+  # to the back of the front without discarding them.
+  nan_penalty: 1.0e4

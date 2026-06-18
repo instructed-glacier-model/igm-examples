@@ -13,8 +13,8 @@ core:
 
 defaults:
 
-  - /user/conf/inputs@inputs.Bueler2005C: Bueler2005C
-  - /user/conf/processes@processes.forcing_Bueler2005C: forcing_Bueler2005C
+  - /user/conf/inputs@inputs: Bueler2005C
+  - /user/conf/processes@processes: forcing_Bueler2005C
 
   - override /inputs:
     - Bueler2005C

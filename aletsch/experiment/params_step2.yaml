@@ -11,7 +11,7 @@ core:
   check_module_needs: false
 
 defaults:
-  - /user/conf/processes@processes.mysmb: mysmb
+  - /user/conf/processes@processes: mysmb
 
   - override /inputs:
     - local

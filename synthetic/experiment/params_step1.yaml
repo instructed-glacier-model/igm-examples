@@ -5,7 +5,7 @@
 # No particle tracking or vertical flow.
 
 defaults:
-  - /user/conf/inputs@inputs.synthetic: synthetic
+  - /user/conf/inputs@inputs: synthetic
   - override /inputs:
     - synthetic
   - override /processes:

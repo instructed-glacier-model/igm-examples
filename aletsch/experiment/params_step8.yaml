@@ -33,10 +33,12 @@ core:
   check_module_needs: false
 
 defaults:
-  # targeted form (@processes.<name>): these user conf files hold bare keys
-  # (nan_penalty / enabled), so they must land under their own namespace.
-  - /user/conf/processes@processes.eval_objective: eval_objective
-  - /user/conf/processes@processes.fit_dashboard: fit_dashboard
+  # user conf files follow the built-in template (keys nested under the module
+  # name), so they load at the parent group with @processes; list form because
+  # both come from the same group.
+  - /user/conf/processes@processes:
+      - eval_objective
+      - fit_dashboard
 
   - override /inputs:
       - local
@@ -55,7 +57,7 @@ inputs:
   local:
     # geometry + observations: thk, usurf, dhdt, uvelsurfobs/vvelsurfobs,
     # thkobs, icemask (single snapshot).
-    filename: input_with_dhdt.nc
+    filename: input.nc
 
 processes:
 

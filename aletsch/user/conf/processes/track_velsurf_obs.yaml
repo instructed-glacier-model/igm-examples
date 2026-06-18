@@ -1,1 +1,2 @@
-velsurfobs_thr: 1.0
+track_velsurf_obs:
+  velsurfobs_thr: 1.0

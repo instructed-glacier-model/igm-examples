@@ -10,7 +10,7 @@ core:
   check_module_needs: false
 
 defaults:
-  - /user/conf/inputs@inputs.synthetic: synthetic
+  - /user/conf/inputs@inputs: synthetic
   - override /inputs:
     - synthetic
   - override /processes:

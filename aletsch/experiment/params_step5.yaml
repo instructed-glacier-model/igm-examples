@@ -11,9 +11,10 @@
 # Or without Optuna (single run): igm_run +experiment=params_step5
 
 defaults:
-  - /user/conf/processes@processes.smb_accmelt: smb_accmelt
-  - /user/conf/processes@processes.clim_aletsch: clim_aletsch
-  - /user/conf/processes@processes.track_usurf_obs: track_usurf_obs
+  - /user/conf/processes@processes:
+      - smb_accmelt
+      - clim_aletsch
+      - track_usurf_obs
 
   - override /inputs:
     - local

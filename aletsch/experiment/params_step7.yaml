@@ -11,14 +11,14 @@
 #   igm_run -m +experiment=params_step7 \
 
 defaults:
-  - /user/conf/outputs@outputs.inverse_accuracy: inverse_accuracy
+  - /user/conf/outputs@outputs: inverse_accuracy
 
   - override /inputs:
     - load_ncdf
-  - override /processes:
-    - iceflow
   - override /assimilations:
     - field_inversion
+  - override /processes:
+    - iceflow
   - override /outputs:
     - write_ncdf
     - inverse_accuracy

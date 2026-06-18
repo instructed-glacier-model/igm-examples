@@ -7,8 +7,8 @@
 # Or without Optuna (single run): igm_run +experiment=params_step3
 
 defaults:
-  - /user/conf/inputs@inputs.synthetic: synthetic
-  - /user/conf/processes@processes.eval_objective: eval_objective
+  - /user/conf/inputs@inputs: synthetic
+  - /user/conf/processes@processes: eval_objective
   - override /inputs:
     - synthetic
   - override /processes:
