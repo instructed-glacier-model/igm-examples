@@ -1,10 +1,17 @@
 __pycache__
+# IGM run-output directories (created at each example root).
+# Use a trailing slash so it matches directories, then re-include the
+# user *module* directories that legitimately live under user/code|conf/outputs.
 outputs/
-!**/code/outputs/
-!**/conf/outputs/
+!**/user/code/outputs/
+!**/user/code/outputs/**
+!**/user/conf/outputs/
+!**/user/conf/outputs/**
+# but keep __pycache__ ignored even under the re-included module dirs
+**/__pycache__/
 multiruns
-RGI60-11.01450
+# OGGM download caches (oggm_shop writes data/<RGI_ID>/...)
+RGI60-*
+RGI2000-*
 input.nc
 CLAUDE.md
-!*/code/outputs/
-!*/conf/outputs/
