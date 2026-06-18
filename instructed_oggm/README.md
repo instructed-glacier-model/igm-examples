@@ -17,29 +17,32 @@ conda activate igm19        # latest dev needs TF 2.19 / Keras 3; also needs `og
 python run_instructed_oggm.py
 ```
 
-## Status with the latest IGM `dev` (checked 2026-06-18, igm19 env)
+## Status with the latest IGM `dev` (verified 2026-06-18, igm19 env)
 
-- ✅ **IGM side is compatible.** `from igm.instructed_oggm import IGM_Model2D`
-  imports cleanly, the `IGM_Model2D(...)` constructor signature still matches the
-  call in `run_instructed_oggm.py`, and it uses the **legacy** iceflow stack
-  (`method: emulated`, `state.slidingco`) which is unchanged on `dev`. OGGM 1.6.2
-  is installed in the `igm19` env.
-- ❌ **Blocked by OGGM data hosting, not by IGM.** The script fetches a bespoke
-  prepro directory:
-  ```
-  https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/exps/igm_v1/
-  ```
-  which is **no longer reachable** (`init_glacier_directories` raises
-  `InvalidParamsError: base url seems unreachable`). The standard OGGM 1.6 prepro
-  is not a drop-in replacement: it is not published for `prepro_border=30`, and
-  the elev-bands prepro does not ship the 2D `consensus_ice_thickness` /
-  `glacier_mask` gridded fields this script reads.
+✅ **Runs end-to-end** (100-yr Aletsch run, writing `snapshot*.png`). Two fixes
+were needed:
 
-### Reviving the example
+1. **OGGM data path (this script).** The old bespoke prepro URL
+   (`.../oggm_v1.6/exps/igm_v1/`, RGI6, border 30) is no longer hosted. It now
+   uses the same maintained prepro as IGM's `oggm_shop` input
+   (`igm/inputs/oggm_shop/oggm_util.py`): RGI **v7** Aletsch
+   (`RGI2000-v7.0-G-11-02596`) from
+   `.../oggm_v1.6/exps/igm_v4`, `from_prepro_level=3`, `prepro_border=40`,
+   `prepro_rgi_version="70G"`. That prepro ships **`millan_ice_thickness`**
+   (not the Farinotti `consensus_ice_thickness`), so the script reads that.
 
-Repoint the OGGM data source (`base_url` / `from_prepro_level` /
-`prepro_border` in `run_instructed_oggm.py`) at a currently-hosted OGGM prepro
-that provides, in `gridded_data`, the 2D fields the script consumes
-(`consensus_ice_thickness`, `topo`, `glacier_mask`) — or build that gridded data
-locally with the OGGM gridded-attributes + Farinotti-consensus thickness tasks.
-Once the directory loads, the IGM coupling above is expected to run as-is.
+2. **IGM core (`igm/instructed_oggm.py`).** `IGM_Model2D` builds its config with
+   `load_yaml_recursive(igm/conf)`, which pulls in the whole conf tree including
+   `assimilations/pretraining`. `iceflow.initialize/update` then saw
+   `"pretraining" in cfg.assimilations` and **skipped iceflow entirely**
+   (`State has no attribute 'ubar'`). The constructor now drops that
+   `assimilations` branch so the forward iceflow actually runs. This edit lives
+   in the IGM source tree, not in this example.
+
+It uses the **legacy** iceflow stack (`method: emulated`, `state.slidingco`),
+which is unchanged on `dev`. OGGM 1.6.2 is installed in the `igm19` env.
+
+### Switching glacier
+
+Edit `rgi_ids` in `run_instructed_oggm.py` to any RGI v7 glacier ID available in
+the `igm_v4` prepro (keep `prepro_rgi_version="70G"` for individual glaciers).

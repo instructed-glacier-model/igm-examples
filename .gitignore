@@ -16,4 +16,6 @@ RGI2000-*
 input.nc
 # aletsch ships its input.nc in-repo (download link retired); keep it tracked
 !aletsch/data/input.nc
+# instructed_oggm writes snapshot PNGs next to the script
+instructed_oggm/snapshot*.png
 CLAUDE.md
