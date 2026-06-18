@@ -1,22 +1,29 @@
 # @package _global_
 
-# hydra:
-#   job:
-#     chdir: True
+# Bueler et al. (2005) test C — isothermal SIA benchmark.
+# A circular, time-evolving surface mass balance grows a radially symmetric
+# ice dome (Table 2, p. 297). Migrated to the latest IGM dev: unified iceflow
+# with the dahunet (SIA-informed) emulator, trained online from scratch.
+# NB: run in the `igm19` conda env (TF 2.19 / Keras 3). See README.
+
+core:
+  # forcing_Bueler2005C sets state.smb only in update(); skip the post-init
+  # module-needs check (it would otherwise falsely flag thk(smb)).
+  check_module_needs: false
 
 defaults:
 
   - /user/conf/inputs@inputs.Bueler2005C: Bueler2005C
   - /user/conf/processes@processes.forcing_Bueler2005C: forcing_Bueler2005C
 
-  - override /inputs: 
+  - override /inputs:
     - Bueler2005C
-  - override /processes: 
+  - override /processes:
     - forcing_Bueler2005C
     - iceflow
     - time
     - thk
-  - override /outputs: 
+  - override /outputs:
     - local
     - plot2d
 
@@ -27,25 +34,43 @@ processes:
     save: 100.0
     cfl: 0.125
   iceflow:
+    method: unified
     physics:
-      init_arrhenius: 100.0
-      init_slidingco: 0.01
+      sliding:
+        tau_ref: 0.01          # was init_slidingco (renamed on the unified stack)
+      viscosity:
+        arrhenius: 100.0       # was init_arrhenius (MPa^-3 yr^-1)
     emulator:
+      network:
+        params:
+          backend: cnn
+          features: [dsdx, dsdy, grad_s, u_sia, u_weertman]
+          nb_out_filter: 32
+          nb_layers: 16
+          conv_ker_size: 3
+          residual: true
+    unified:
+      mapping: network
+      inputs: [thk, usurf, arrhenius, tau_ref, dX]
+      network:
+        pretrained: false
+        architecture: dahunet
+      optimizer: adam
+      adam:
+        lr: 5.0e-04
+        lr_init: 1.0e-03
+      nbit_init: 500
       nbit: 1
+      nbit_warmup: -1
       retrain_freq: 1
-      #retrain_lr: 0.0001
-      
-    # type: "solved"
-    # solve_nbitmax: 10
-    # solve_step_size: 1
-    # solve_stop_if_no_decrease: true
-    # retrain_emulator_lr: 0.0001
-      
+      data_preparation:
+        framesizemax: 99999
+
 outputs:
   plot2d:
     live: false
   local:
-    vars_to_save: 
+    vars_to_save:
       - topg
       - usurf
       - thk
