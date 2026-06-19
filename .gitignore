@@ -23,3 +23,4 @@ input.nc
 # instructed_oggm writes snapshot PNGs next to the script
 instructed_oggm/snapshot*.png
 CLAUDE.md
+params_step9.yaml

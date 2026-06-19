@@ -139,6 +139,10 @@ python tools/plot_misfit_maps.py --run multirun/<date>/<trial_number>
 
 For a higher-resolution replay (annual snapshots) of one specific best-trial parameter set, copy `experiment/params_step6.yaml` to a custom file, bake in the chosen `(weight_accumulation, weight_ablation, init_slidingco)` values, and set `processes.time.save: 1.0`.
 
+------------------------------------------------------------------------------------------------------
+# EXAMPLES ARE STILL IN CONSTRUCTION -- NEED TO BE FINIALIZED -- FROM THIS STEP, JUST FOR INDICATION
+------------------------------------------------------------------------------------------------------
+
 ### Step 7: Inverting for ice thickness from surface velocities (`params_step7.yaml`)
 
 A standalone **inversion** example: rather than running the glacier forward in time, this step uses IGM's `field_inversion` assimilation module to **invert for the spatially-varying ice thickness** (`thk`) that best reproduces a field of observed surface velocities.
