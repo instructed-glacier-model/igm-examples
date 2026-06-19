@@ -37,35 +37,14 @@ processes:
     end: -25000.0
     save: 100.0
 
-  # Unified iceflow with the dahunet (SIA-informed) emulator, trained online
-  # from scratch. Replaces the deprecated `emulated` mode + NiceNet network.
+  # iceflow uses the default unified dahunet emulator; only sliding is set.
   iceflow:
-    method: unified
-    emulator:
-      network:
-        params:
-          backend: cnn
-          features: [dsdx, dsdy, grad_s, u_sia, u_weertman]
-          nb_out_filter: 32
-          nb_layers: 16
-          conv_ker_size: 3
-          residual: true
+    physics:
+      sliding:
+        tau_ref: 0.82      # basal shear stress (MPa) at the reference speed u_ref
+        u_ref: 35.0       # tau_ref IS tau_b at a 35 m/yr sliding speed
     unified:
-      mapping: network
-      inputs: [thk, usurf, arrhenius, tau_ref, dX]
-      network:
-        pretrained: false
-        architecture: dahunet
-      optimizer: adam
-      adam:
-        lr: 5.0e-04
-        lr_init: 1.0e-03
-      nbit_init: 500
-      nbit: 1
-      nbit_warmup: -1
-      retrain_freq: 1
-      data_preparation:
-        framesizemax: 99999
+      nbit_init: 0        # starts from bare bed (zero ice) -> no warm-up to train on
 
 outputs:
   plot2d:
