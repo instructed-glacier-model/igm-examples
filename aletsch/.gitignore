@@ -1,0 +1,11 @@
+# Generated artifacts for the Aletsch tutorials (regenerate with the README commands).
+outputs/
+multirun/
+results_*/
+*.log
+optuna.db
+optuna_2obj.db
+optimization_results.csv
+pareto_front.png
+misfit_maps.png
+params_E_former.yaml

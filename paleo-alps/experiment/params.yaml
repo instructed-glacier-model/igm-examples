@@ -7,6 +7,8 @@ core:
   check_module_needs: false
 
 defaults:
+  - common: iceflow_offline 
+
   - /user/conf/processes@processes: smb_signal # Loads the base configuration. Needs to be before an `override` I believe, otherwise, we get an assertion error
   
   - override /inputs: 
@@ -18,8 +20,7 @@ defaults:
     - thk
   - override /outputs: 
     - plot2d
-    - local
-#  - override /hydra/launcher: joblib
+    - local 
 
 inputs:
   load_tif:
@@ -41,8 +42,9 @@ processes:
   iceflow:
     physics:
       sliding:
-        tau_ref: 0.82      # basal shear stress (MPa) at the reference speed u_ref
-        u_ref: 35.0       # tau_ref IS tau_b at a 35 m/yr sliding speed
+        tau_ref: 0.15 # basal shear stress (MPa) required to ...
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)
+
     unified:
       nbit_init: 0        # starts from bare bed (zero ice) -> no warm-up to train on
 

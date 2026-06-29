@@ -1,0 +1,36 @@
+# @package _global_
+#
+# Reusable config fragment (see experiment/common/). Pull it into an experiment by
+# listing it FIRST in the defaults list, in dict form:
+#
+#   defaults:
+#     - common: iceflow_reference
+#     - override /inputs: [local]
+#     ...
+#
+# This fragment: the REFERENCE iceflow solver — the exact Blatter-Pattyn physics,
+# solved directly. It uses the `identity` mapping (the velocity field itself is the
+# control variable, with NO neural network) minimised with L-BFGS. Slow, but it is
+# the ground-truth solution used to validate the off-line trained emulator and the
+# on-line retrained solver against (cf. Part A, Step 6). A finer vertical grid
+# (here Nz=4, matching the on-line solver of Step 5 for a like-for-like comparison).
+# Mirrors the exp2 `reference_dev` reference solve (which used Nz=10).
+processes:
+  iceflow:
+    method: unified
+    numerics:
+      Nz: 4
+      vert_spacing: 4.0
+      basis_vertical: Lagrange
+    unified:
+      mapping: identity
+      optimizer: lbfgs
+      nbit: 50
+      nbit_init: 50
+      retrain_freq: 1
+      lbfgs:
+        memory: 10
+        alpha_min: 0.0
+      line_search: hager-zhang
+      data_preparation:
+        framesizemax: 99999

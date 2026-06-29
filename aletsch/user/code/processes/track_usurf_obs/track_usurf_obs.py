@@ -59,8 +59,8 @@ def update(cfg,state):
         mean  = np.mean(diff)
         std   = np.std(diff)
         vol   = np.sum(state.thk) * (state.dx ** 2) / 10 ** 9
-        print(" Check modelled vs observed surface at time : %8.0f (obs year %d) ; Mean discr. : %8.2f  ;  Std : %8.2f |  Ice volume : %8.2f " \
-                % (state.t, y, mean, std, vol) )
+        print("\n Modelled vs observed DEM stat at time : %4.0f ; Mean discr. : %6.2f  ;  Std : %6.2f |  Ice volume : %6.2f " \
+                % (state.t, mean, std, vol) )
 
         state.track_stds.append(std)
 

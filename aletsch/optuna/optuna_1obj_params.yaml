@@ -10,7 +10,7 @@ n_trials: 50
 n_jobs: 4
 gpu_allow_growth: true
 
-storage: sqlite:///optuna.db
+storage: sqlite:///optuna_1obj.db
 study_name: aletsch
 
 sampler:
@@ -20,11 +20,11 @@ parameters:
   - name: processes.smb_accmelt.weight_accumulation
     type: float
     low: 0.5
-    high: 2.0
+    high: 3.0
     log: false
 
   - name: processes.smb_accmelt.weight_ablation
     type: float
     low: 0.5
-    high: 2.0
+    high: 3.0
     log: false

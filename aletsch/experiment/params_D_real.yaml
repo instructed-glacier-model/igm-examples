@@ -1,0 +1,90 @@
+# @package _global_
+
+# Part D, Step 1: Ice-thickness field_inversion on REAL-WORLD data
+#
+# Same machinery as the synthetic benchmark (Part D, Step 2, params_D_synthetic):
+# the field_inversion module inverts for ice thickness from observed surface
+# velocities. But instead of the synthetic / manufactured benchmark
+# `inverse_250m.nc` — where a known `true_thk` and `true_tauref` are available
+# for validation — here we invert directly the real Aletsch observations stored
+# in `input.nc`.
+#
+# Key consequences of using real data:
+#   * There is NO ground-truth thickness field, so the `inverse_accuracy`
+#     diagnostic of the synthetic benchmark is dropped. Inspect the inversion
+#     through the iterative `optimize.nc` (written by field_inversion) and the
+#     final `output.nc` instead.
+#   * The observed surface velocities (`uvelsurfobs`, `vvelsurfobs`) only
+#     cover part of the glacier (~73% of cells are NaN). The misfit term
+#     automatically restricts the cost to finite observations intersected
+#     with `icemask`, so the gaps are handled cleanly.
+#   * The basal sliding parameter is genuinely unknown for real data, so we
+#     use a physically-motivated real-Aletsch value (tau_ref = 0.213 MPa at
+#     u_ref = 100) rather than a value matched to a manufactured input.
+#
+# Run with:
+#   igm_run +experiment=params_D_real
+
+defaults:
+  - common: iceflow_online
+  - override /inputs:
+    - local
+  - override /assimilations:
+    - field_inversion
+  - override /processes:
+    - iceflow
+  - override /outputs:
+    - local
+
+inputs:
+  local:
+    filename: input.nc
+    
+processes:
+
+  iceflow:
+    physics:
+      sliding:
+        tau_ref: 0.213 # basal shear stress (MPa) required to ...
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)
+    numerics:
+      Nz: 2
+      basis_vertical: molho
+      basis_horizontal : q1
+    method: unified
+    unified:
+      display:
+        print_cost: true
+      mapping: network
+      optimizer: lbfgs
+      line_search: hager-zhang
+      nbit: 0
+      retrain_freq: 0
+      network:
+        pretrained_path: "dahunet_mini.keras"  # shipped inside the igm package
+        pretrained: true
+
+assimilations:
+  field_inversion:
+    optimization:
+       retrain_iter: 0
+    variables:
+      # mask: icemask restricts the inversion to glaciated cells (important on
+      # the real domain, which contains a lot of ice-free terrain).
+      - name: thk
+        transform: identity
+        lower_bound: 0.0
+        upper_bound: 1000.0
+        mask: icemask
+    objective:
+      misfit:
+        - name: velsurf
+          kind: huber
+          components: [uvelsurf, vvelsurf]
+          obs: [uvelsurfobs, vvelsurfobs]
+          std: 1.0
+      regularization:
+        - name: thk
+          penalty: squared_laplacian
+          lam: 1000000.0
+          ref: usurf

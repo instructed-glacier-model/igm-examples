@@ -1,0 +1,169 @@
+# @package _global_
+
+# Part E — Data assimilation by time_relaxation — ONLINE solver
+#
+# Runs the forward ice-flow model for 500 years while *nudging* three control
+# fields a little at every step, so the modelled glacier slowly relaxes onto the
+# observations. By the end geometry, mass balance and velocity are mutually
+# consistent with the data.
+#
+# Three relaxation steps run together (each an orthogonal residual / update / control):
+#   thk     (thickness) -> flux divergence matches AMB (= smb - dhdt)   amb_thk
+#   usurf   (surface)   -> same shared AMB residual                     amb_usurf
+#   tau_ref (friction)  -> observed surface speed velsurf_magobs        friction
+# The first two are the apparent-mass-balance bed inversion of Frank & van Pelt
+# (2025); the third is a classic friction inversion. See the README.
+#
+# This version uses the ON-LINE retrained iceflow solver: the network is
+# retrained on the fly, so it stays physically consistent as the geometry and
+# tau_ref evolve -> robust (no out-of-distribution drift) and a tighter velocity
+# fit than the offline emulator, at the cost of being slower. The tau_ref clamp
+# [0.05, 0.5] MPa is kept as a physical (not numerical) bound.
+#
+# Run with:  conda activate igm && igm_run +experiment=params_E_online
+
+core:
+  check_compat_params: false        # time_relaxation produces amb/divflux/tau_ref internally
+
+defaults:
+  - common: iceflow_online
+  - /user/conf/processes@processes:
+      - eval_objective
+      - fit_dashboard
+  - override /inputs:
+      - local
+  - override /assimilations:
+      - time_relaxation
+  - override /processes:
+      - iceflow
+      - smb
+      - eval_objective
+      - fit_dashboard
+  - override /outputs:
+      - local
+
+inputs:
+  local:
+    # geometry + observations: thk, usurf, dhdt, uvelsurfobs/vvelsurfobs, thkobs, icemask
+    filename: input.nc
+
+processes:
+
+  iceflow:
+    physics:
+      sliding:
+        # Start the friction control field near its optimum: the time_relaxation
+        # friction inversion only nudges tau_ref in gentle bounded multiplicative
+        # kicks, so it cannot travel far during the run. Starting at 0.06 (as in
+        # params_E_online) gives rmse_vel ~11; starting at 0.325 leaves it ~15.
+        tau_ref: 0.1    # basal shear stress (MPa) at the reference speed u_ref
+        u_ref:   100.0   # ... = 100 m/yr
+
+  smb:
+    method: simple
+    simple:
+      update_freq: 1.0
+      array:
+        - ["time", "gradabl", "gradacc", "ela", "accmax"]
+        - [0, 0.007, 0.004, 3050, 2.0]
+
+assimilations:
+  time_relaxation:
+
+    forward_model: iceflow
+    pre_processes:  [smb]            # refresh state.smb before each iceflow solve
+    post_processes: [fit_dashboard]  # live fit maps at each save
+
+    viz:
+      show:  false                   # true -> interactive window (needs a display)
+      dpi:   110
+      title: Aletsch
+
+    time:
+      start: 0.0
+      end:   500.0
+      step:  0.1
+      save:  50.0                    # 11 snapshots (t = 0, 50, ..., 500)
+      cfl:   0.2
+
+    steps:
+
+      # --- apparent-mass-balance bed inversion (two coupled geometry steps) ---
+      # nudge thk and usurf until the modelled flux divergence equals the
+      # apparent mass balance amb = smb - dhdt_obs (a shared linear residual).
+      - name: amb_thk
+        residual:
+          kind: linear
+          target: amb
+          current: divflux
+        update:
+          kind: additive
+          alpha: 0.10
+        control:
+          field: thk
+          bounds: [0.0, 2000.0]
+        mask: icemask
+        geometry_policy: recompute_topg
+
+      - name: amb_usurf
+        shares_residual_with: amb_thk
+        residual:
+          kind: linear
+          target: amb
+          current: divflux
+        update:
+          kind: additive
+          alpha: 0.03
+        control:
+          field: usurf
+          floor_at: topg
+        mask: icemask
+        geometry_policy: recompute_topg
+
+      # --- friction inversion against observed surface speed ---
+      # multiply tau_ref by (1 + alpha*r), r = relative speed mismatch (clipped to
+      # +/- r_max). Slow cadence; the last kick lands >= 60 yr before scoring.
+      - name: friction
+        residual:
+          kind: relative
+          target: velsurf_magobs
+          current: velsurf_mag
+          eps: 1.0
+        update:
+          kind: multiplicative_linear
+          alpha: -1.0
+          r_max: 0.3               # cap each tau_ref kick at +/- 30%
+        control:
+          field: tau_ref
+          bounds: [0.05, 0.5]      # physical range for u_ref = 100 m/yr
+        mask: icemask
+        cadence: 50.0
+        end_time: 500.0
+
+    outputs:
+      misfits:
+        path: misfits.csv
+        track:
+          - step: amb_thk
+            kind: rmse
+          - step: friction
+            kind: rmse
+
+outputs:
+  local:
+    output_file: output.nc
+    vars_to_save:
+      - thk
+      - topg
+      - usurf
+      - velbar_mag
+      - velsurf_mag
+      - tau_ref
+      - smb
+      - dhdt
+      - dhdt_obs
+      - velbase_mag
+      - velsurf_magobs
+      - divflux
+      - icemask
+      - amb

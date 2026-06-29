@@ -1,0 +1,74 @@
+# @package _global_
+#
+# Part C: ice-thickness data assimilation (data_assimilation module).
+# Single shared config for all Part C steps (single inversion, then the L-curve
+# and sliding sweeps that override one parameter on the command line).
+# Control: ice thickness (thk)
+# Cost: surface velocity misfit + ice mask
+# This provides a good baseline result for the Aletsch Glacier.
+
+core:
+  hardware:
+    visible_gpus: [0]
+
+defaults:
+  - common: iceflow_online
+  - override /inputs:
+    - local
+  - override /assimilations:
+    - data_assimilation
+  - override /processes:
+    - iceflow
+
+inputs:
+  local:
+    filename: input.nc
+
+processes:
+  iceflow:
+    physics:
+      sliding:
+        tau_ref: 0.25 # basal shear stress (MPa) required to ...
+        u_ref: 100.0  # ... achieve u_ref basal sliding speed (m/yr)
+
+    unified:
+      nbit_init: 100
+      nbit: 100
+      retrain_freq: 50
+      nbit_warmup: -1
+
+assimilations:
+  data_assimilation:
+    control_list:
+      - thk
+    cost_list:
+      - velsurf
+      - icemask
+    optimization:
+      nbitmax: 1000
+      step_size: 0.9
+      retrain_iceflow_model: true
+      step_size_decay: 0.95
+      pertubate: True
+      patience: 200
+    fitting:
+      velsurfobs_std: 2.0
+    regularization:
+      thk: 300.0
+      to_regularize: thk
+    scaling:
+      thk: 1
+    output:
+      plot2d_live: false
+      save_result_in_ncdf: geology-optimized.nc
+      save_iterat_in_ncdf: true
+      vars_to_save:
+        - usurf
+        - thk
+        - tau_ref
+        - velbase_mag
+        - velsurf_mag
+        - velsurfobs_mag
+        - divflux
+        - icemask
+        - arrhenius

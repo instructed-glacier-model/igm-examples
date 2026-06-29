@@ -37,16 +37,16 @@ parameters:
   - name: processes.smb_accmelt.weight_accumulation
     type: float
     low: 0.5
-    high: 2.0
+    high: 3.0
     log: false
 
   - name: processes.smb_accmelt.weight_ablation
     type: float
     low: 0.5
-    high: 2.0
+    high: 3.0
     log: false
 
-  # `tau_ref` is the basal shear stress τ_ref (MPa) at u_ref = 35 m/yr
+  # `tau_ref` is the basal shear stress τ_ref (MPa) at u_ref = 100 m/yr
   # (u_ref is set in experiment/params_step6.yaml). Literature values for
   # temperate alpine valley glaciers like Aletsch sit around 0.08–0.30 MPa
   # (driving stresses ~0.10–0.20 MPa, with steeper-section peaks); the upper
@@ -56,5 +56,5 @@ parameters:
   - name: processes.iceflow.physics.sliding.tau_ref
     type: float
     low: 0.08
-    high: 0.50
+    high: 0.5
     log: false

@@ -1,0 +1,37 @@
+# @package _global_
+
+# Step 2: Custom user-defined SMB module
+# Same as Step 1 but replaces the built-in smb_simple with a custom user 
+# module (mysmb) that uses a sinusoidal ELA signal.
+
+defaults:
+  - common: iceflow_offline # load params of the off-line trained iceflow emulator
+
+  - /user/conf/processes@processes: mysmb # load user-defined module params
+
+  - override /inputs:
+    - local
+  - override /processes:
+    - mysmb   # load user-defined module mysmb, available in user/conf/processes/
+    - iceflow
+    - time
+    - thk
+  - override /outputs:
+    - local
+    - live_dashboard
+
+inputs:
+  local:
+    filename: input.nc
+
+processes:
+  time:
+    start: 1900.0
+    end: 2300.0
+    save: 10.0
+ 
+  iceflow:
+    physics:
+      sliding:
+        tau_ref: 0.325 # basal shear stress (MPa) required to ..
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)

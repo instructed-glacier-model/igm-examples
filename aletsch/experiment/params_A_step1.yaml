@@ -1,0 +1,42 @@
+# @package _global_
+
+# Step 1: Simple ELA-based SMB
+# The simplest setup: advance-retreat simulation using the built-in smb_simple
+# module with a time-varying Equilibrium Line Altitude (ELA), 1900-2000.
+
+defaults:
+  - common: iceflow_offline # load params of the off-line trained iceflow emulator
+  - override /inputs:       # load the local model input file to read data
+    - local
+  - override /processes:    # load the processes to run in this experiment
+    - smb
+    - iceflow
+    - time
+    - thk
+  - override /outputs:      # load the outputs to write to disk
+    - local
+    - live_dashboard        # module to visualize the model state in a live dashboard
+
+inputs:
+  local:
+    filename: input.nc
+
+processes:
+  smb:
+    method: simple
+    simple:
+      array:
+        - ["time", "gradabl", "gradacc", "ela", "accmax"]
+        - [1900, 0.009, 0.005, 2800, 2.0]
+        - [2000, 0.009, 0.005, 2900, 2.0]
+        - [2100, 0.009, 0.005, 3300, 2.0]
+  time:
+    start: 1900.0
+    end: 2000.0
+    save: 10.0
+
+  iceflow:
+    physics:
+      sliding: 
+        tau_ref: 0.325 # basal shear stress (MPa) required to ..
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)

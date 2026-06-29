@@ -1,0 +1,46 @@
+# @package _global_
+#
+# Reusable config fragment (see experiment/common/). Files here hold a piece of
+# configuration that several experiments can share. Pull one into an experiment
+# by listing it FIRST in the defaults list, in dict form:
+#
+#   defaults:
+#     - common: iceflow_online         # this fragment (composed over IGM defaults)
+#     - override /inputs: [local]      # ...overrides must come AFTER
+#     ...
+#
+# It is merged on top of IGM's global defaults and below the experiment's own
+# body, so the experiment can still override individual keys (e.g. sliding.tau_ref).
+#
+# This fragment: the on-line retrained iceflow solver — the symmetric counterpart
+# of iceflow_offline. No pretrained weights: a fresh dahunet network is trained
+# from scratch and retrained on the fly to minimise the actual ice-flow energy, so
+# it solves the physics for the current geometry (slower than the off-line trained
+# emulator, but adapts).
+# The values below are IGM's defaults, written out explicitly so the key
+# online-training knobs are visible; delete any line to fall back to the default.
+processes:
+  iceflow:
+    method: unified
+    numerics:
+      Nz: 4                      # vertical layers
+      basis_horizontal: central  # horizontal discretisation
+      basis_vertical: Lagrange   # vertical basis
+    unified:
+      mapping: network
+      inputs: [thk, usurf, arrhenius, tau_ref, dX]
+      optimizer: adam
+      nbit_init: 300             # training iterations for the fresh net at init
+      nbit: 5                    # training iterations per on-the-fly retraining
+      nbit_warmup: -1            # extra warm-up iterations (-1 = none)
+      retrain_freq: 5            # retrain the solver every N time steps
+      network:
+        pretrained: false        # <-- train from scratch (vs. iceflow_offline)
+        architecture: dahunet
+        params:                  # Optuna-tuned dahunet defaults for the from-scratch path
+          backend: cnn
+          features: [dsdx, dsdy, grad_s, u_sia, u_weertman]
+          nb_out_filter: 24
+          nb_layers: 6
+          conv_ker_size: 3
+          residual: true

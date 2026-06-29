@@ -1,10 +1,12 @@
 # @package _global_
 
 # Step 4: With particle tracking
-# Same as Step 3, but adds particle tracking to visualize ice flow paths.
+# Same as Step 3, but adds particle tracking to visualize ice flow paths. 
 # Uses custom seeding from a spatial map.
 
 defaults:
+  - common: iceflow_offline  # load params of the off-line trained iceflow emulator
+  
   - /user/conf/processes@processes:
       - smb_accmelt
       - clim_aletsch
@@ -19,8 +21,8 @@ defaults:
     - iceflow
     - time
     - thk
-    - rockflow
-    - particles
+    - rockflow   # rockflow module is needed for particle tracking
+    - particles  # load particle tracking module
   - override /outputs:
     - local
     - plot2d
@@ -31,14 +33,14 @@ inputs:
 
 processes:
   smb_accmelt:
-    weight_accumulation: 1.062
-    weight_ablation: 1.304
+    weight_accumulation: 1.84
+    weight_ablation: 2.01
 
   iceflow:
     physics:
       sliding:
-        tau_ref: 0.2      # basal shear stress (MPa) at the reference speed u_ref
-        u_ref: 35.0       # tau_ref IS tau_b at a typical ~35 m/yr Aletsch trunk speed
+        tau_ref: 0.325 # basal shear stress (MPa) required to ...
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)
 
   time:
     start: 1880.0

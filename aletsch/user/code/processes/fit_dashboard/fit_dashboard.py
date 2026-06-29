@@ -103,15 +103,10 @@ def initialize(cfg, state):
     except Exception:
         t_end = None
 
-    # AMB-row colour scale is set from |amb| (~±2 m/yr); modelled divflux is far
-    # larger and saturates at that scale, hiding smoothness changes. Multiply the
-    # AMB-row limits by amb_scale (default 10x) so the divflux structure shows.
-    amb_scale = float(getattr(viz, "amb_scale", 10.0)) if viz is not None else 10.0
-
     state._fitviz = dict(
         plt=plt, show=show, outdir=outdir, t_end=t_end, title=title,
         dpi=int(getattr(viz, "dpi", 110)) if viz is not None else 110,
-        amb_scale=amb_scale,
+        amb_scale=2.0,
         built=False, frames=[], hist_t=[], hist_vel=[], hist_amb=[],
     )
 

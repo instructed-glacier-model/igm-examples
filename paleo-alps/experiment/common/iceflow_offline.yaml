@@ -1,0 +1,30 @@
+# @package _global_
+#
+# Reusable config fragment (see experiment/common/). Files here hold a piece of
+# configuration that several experiments can share. Pull one into an experiment
+# by listing it FIRST in the defaults list, in dict form:
+#
+#   defaults:
+#     - common: iceflow_offline        # this fragment (composed over IGM defaults)
+#     - override /inputs: [local]      # ...overrides must come AFTER
+#     ...
+#
+# It is merged on top of IGM's global defaults and below the experiment's own
+# body, so the experiment can still override individual keys (e.g. sliding.tau_ref).
+#
+# This fragment: the off-line trained iceflow emulator (frozen pretrained dahunet_mini).
+processes:
+  iceflow:
+    method: unified
+    numerics:
+      Nz: 2
+      basis_horizontal: q1
+      basis_vertical: molho
+    unified:
+      mapping: network
+      inputs: [thk, usurf, arrhenius, tau_ref, dX]
+      nbit_init: 0
+      retrain_freq: 0
+      network:
+        pretrained_path: "dahunet_mini.keras"
+        pretrained: true

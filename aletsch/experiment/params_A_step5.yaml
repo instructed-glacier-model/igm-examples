@@ -1,0 +1,57 @@
+# @package _global_
+
+# Step 5: Off-line trained emulator vs on-line retrained solver
+# Identical to Step 1 (the simple smb_simple ELA run, 1900-2000) EXCEPT for the
+# iceflow component: this uses `common: iceflow_online` instead of iceflow_offline.
+# Run it and compare with Step 1 to see the effect of that choice.
+#
+# The two differ in what the neural network actually does:
+#   - OFF-LINE trained iceflow EMULATOR (Steps 1-4, common: iceflow_offline): a
+#     network pretrained beforehand and used FROZEN -- it *emulates* the ice-flow
+#     physics, with no training during the run. Fast and reproducible, but
+#     trustworthy only near the geometries/parameters it was trained on
+#     (Nz=2, molho basis, tau_ref ~ 0.21 MPa at u_ref=100; = 0.046 at u_ref=1).
+#   - ON-LINE retrained iceflow SOLVER (this step, and Parts B-E, iceflow_online):
+#     a fresh network is trained from scratch at init (nbit_init) and retrained on
+#     the fly every few steps (retrain_freq) to minimise the actual ice-flow energy
+#     -- so it *solves* the physics for the current state, adapting to the evolving
+#     geometry and to any sliding/rheology. Slower, but general and self-correcting.
+
+defaults:
+  - common: iceflow_online # load params of the on-line retrained iceflow solver
+
+  - override /inputs:
+    - local
+  - override /processes:
+    - smb
+    - iceflow
+    - time
+    - thk
+  - override /outputs:
+    - local
+    - live_dashboard
+
+inputs:
+  local:
+    filename: input.nc
+
+processes:
+  smb:
+    method: simple
+    simple:
+      array:
+        - ["time", "gradabl", "gradacc", "ela", "accmax"]
+        - [1900, 0.009, 0.005, 2800, 2.0]
+        - [2000, 0.009, 0.005, 2900, 2.0]
+        - [2100, 0.009, 0.005, 3300, 2.0]
+
+  time:
+    start: 1900.0
+    end: 2000.0
+    save: 10.0
+
+  iceflow:
+    physics:
+      sliding:
+        tau_ref: 0.325 # basal shear stress (MPa) required to ...
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)

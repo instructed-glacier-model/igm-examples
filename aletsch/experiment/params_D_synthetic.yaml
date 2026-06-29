@@ -1,6 +1,6 @@
 # @package _global_
 
-# Step 7: Inversion of ice thickness using observations of surface ice velocity
+# Part D, Step 2: Synthetic-benchmark ice-thickness field_inversion
 #
 # Uses the field_inversion module to invert for ice thickness
 # Input data includes a true thickness field, for comparison with the inverted thickness
@@ -8,30 +8,33 @@
 # These ice velocities can then be used as synthetic observations to validate the inversion.
 #
 # Run with:
-#   igm_run -m +experiment=params_step7 \
+#   igm_run +experiment=params_D_synthetic
 
 defaults:
+  - common: iceflow_online
+  
   - /user/conf/outputs@outputs: inverse_accuracy
 
   - override /inputs:
-    - load_ncdf
+    - local
   - override /assimilations:
     - field_inversion
   - override /processes:
     - iceflow
   - override /outputs:
-    - write_ncdf
+    - local
     - inverse_accuracy
 
 inputs:
-  load_ncdf:
-    input_file: inverse_250m.nc
+  local:
+    filename: inverse_250m.nc
+    
 processes:
   iceflow:
     physics:
       sliding:
-        tau_ref: 0.0323 # <----- ensure this is the same as the value used in the input file since here we are not trying to invert for tau_ref but only for thk
-        u_ref: 1.0
+        tau_ref: 0.15  # basal shear stress (MPa) required to ...
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)
     numerics:
       Nz: 2
       basis_vertical: molho
@@ -53,9 +56,19 @@ processes:
 assimilations:
   field_inversion:
     variables:
-    - { name: thk, transform: identity,  lower_bound: 0.0 , upper_bound: 1000.0}
+      - name: thk
+        transform: identity
+        lower_bound: 0.0
+        upper_bound: 1000.0
     objective:
       misfit:
-        - { name: velsurf, kind: huber, components: [uvelsurf, vvelsurf], obs: [uvelsurfobs, vvelsurfobs], std: 1.0 }
+        - name: velsurf
+          kind: huber
+          components: [uvelsurf, vvelsurf]
+          obs: [uvelsurfobs, vvelsurfobs]
+          std: 1.0
       regularization:
-        - { name: thk, penalty: squared_laplacian, lam: 1000000.0, ref: usurf}
+        - name: thk
+          penalty: squared_laplacian
+          lam: 1000000.0
+          ref: usurf

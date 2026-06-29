@@ -1,11 +1,9 @@
 # @package _global_
 
-# Step 1: Simple ELA-based SMB
-# Basic advance-retreat simulation of the Aletsch Glacier using smb_simple.
-# This is the simplest possible setup with a built-in SMB parameterization.
+# Step 1: Simple ELA-based SMB (legacy mode, as in IGM 3.1.1)  - override /inputs:
 
 defaults:
-  - override /inputs:
+  - override /inputs:       # load the local model input file to read data
     - local
   - override /processes:
     - smb
@@ -34,10 +32,11 @@ processes:
     end: 2000.0
     save: 10.0
 
-  # iceflow uses the default unified dahunet emulator; only sliding is set.
+  # This are the parameters to switch the behaviour of IGM 3.1.1.
   iceflow:
+    method: emulated
+    numerics:
+      Nz: 10                  
     physics:
       sliding:
-        tau_ref: 0.2      # basal shear stress (MPa) at the reference speed u_ref
-        u_ref: 35.0       # tau_ref IS tau_b at a typical ~35 m/yr Aletsch trunk speed
-
+        u_ref: 1.0            

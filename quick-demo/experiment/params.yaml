@@ -1,6 +1,7 @@
 # @package _global_
 
 defaults:
+  - common: iceflow_offline 
   - override /inputs: 
     - oggm_shop
     - local
@@ -29,8 +30,8 @@ processes:
   iceflow:
     physics:
       sliding:
-        tau_ref: 0.2      # basal shear stress (MPa) at the reference speed u_ref
-        u_ref: 35.0       # tau_ref IS tau_b at a 35 m/yr sliding speed
+        tau_ref: 0.215 # basal shear stress (MPa) required to ...
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)
   climate:
     method: oggm
     oggm:

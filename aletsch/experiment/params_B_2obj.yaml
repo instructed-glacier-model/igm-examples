@@ -1,8 +1,8 @@
 # @package _global_
 
-# Step 6: Multi-objective Optuna parameter optimization
+# Part B, Step 2: Multi-objective Optuna hyperparameter tuning
 #
-# Same setup as Step 5, but optimizes two objectives simultaneously:
+# Same setup as Part B Step 1 (params_B_1obj), but optimizes two objectives simultaneously:
 #   - cost_usurf   : mean STD between modelled and observed DEMs (7 dates)
 #   - cost_velsurf : RMSE between modelled and observed surface speeds at 2020
 #
@@ -10,14 +10,16 @@
 # instead of TPE, which is better suited for Pareto-front exploration.
 #
 # Run with:
-#   igm_run -m +experiment=params_step6 \
+#   igm_run -m +experiment=params_B_2obj \
 #           hydra/sweeper=igm_optuna \
 #           hydra.sweeper.optuna_config=optuna_2obj_params.yaml
 #
 # Single (non-optimized) run:
-#   igm_run +experiment=params_step6
+#   igm_run +experiment=params_B_2obj
 
 defaults:
+  - common: iceflow_offline
+
   - /user/conf/processes@processes:
       - smb_accmelt
       - clim_aletsch
@@ -43,18 +45,15 @@ inputs:
 
 processes:
   smb_accmelt:
-    weight_accumulation: 1.062
-    weight_ablation: 1.304
+    weight_accumulation: 1.84
+    weight_ablation: 2.01
 
   iceflow:
-    physics:
-      # With u_ref = 35 m/yr (a typical basal speed for Aletsch), `tau_ref`
-      # IS the basal shear stress τ_b (MPa) at that reference speed:
-      #     τ_b = tau_ref · (|u_b| / u_ref)^(1/m),  m = 3
-      # Literature range for a temperate alpine glacier: 0.08–0.30 MPa.
-      sliding:
-        tau_ref: 0.15
-        u_ref: 35.0
+    physics: 
+      sliding: 
+        tau_ref: 0.325 # basal shear stress (MPa) required to ...
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)
+        
   time:
     start: 1880.0
     end: 2020.0

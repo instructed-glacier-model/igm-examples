@@ -1,0 +1,61 @@
+# @package _global_
+
+# Step 3: Realistic climate and accumulation/melt SMB
+# Uses custom climate (clim_aletsch) and accumulation/melt (smb_accmelt) modules
+# to model the Aletsch Glacier from 1880 to 2020, with observation tracking
+# (track_usurf_obs) comparing modelled vs observed surface elevations.  
+
+defaults:
+  - common: iceflow_offline  # load params of the off-line trained iceflow emulator
+
+  - /user/conf/processes@processes: # load the custom user-defined module params
+      - smb_accmelt
+      - clim_aletsch
+      - track_usurf_obs
+
+  - override /inputs:
+    - local
+  - override /processes:
+    - track_usurf_obs # load observation tracking module
+    - clim_aletsch    # load custom climate module
+    - smb_accmelt     # load custom accumulation/melt module
+    - iceflow
+    - time
+    - thk
+  - override /outputs:
+    - local
+    - live_dashboard
+
+inputs:
+  local:
+    filename: input.nc
+
+processes:
+  smb_accmelt:
+    weight_accumulation: 1.84  # weighting factor for accumulation
+    weight_ablation: 2.01      # weighting factor for ablation
+
+  iceflow:
+    physics:
+      sliding:
+        tau_ref: 0.325 # basal shear stress (MPa) required to ..
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)
+
+  time:
+    start: 1880.0
+    end: 2020.0
+    save: 1.0
+
+outputs:  # here, we save additional variables to visualize ice flow and SMB patterns
+  local:
+    output_file: output.nc
+    vars_to_save:
+      - thk
+      - topg
+      - usurf
+      - velbase_mag
+      - velbar_mag
+      - velsurf_mag
+      - smb 
+      - divflux
+

@@ -1,16 +1,18 @@
 # @package _global_
 
-# Step 5: Single-objective Optuna parameter optimization
+# Part B, Step 1: Single-objective Optuna hyperparameter tuning
 # Uses the Optuna sweeper to find optimal weight_accumulation and weight_ablation
 # parameters that minimize the misfit with observed DEMs (mean STD from track_usurf_obs).
 # Optimization settings live in optuna_1obj_params.yaml.
 # Run with:
-#   igm_run -m +experiment=params_step5 \
+#   igm_run -m +experiment=params_B_1obj \
 #           hydra/sweeper=igm_optuna \
 #           hydra.sweeper.optuna_config=optuna_1obj_params.yaml
-# Or without Optuna (single run): igm_run +experiment=params_step5
+# Or without Optuna (single run): igm_run +experiment=params_B_1obj
 
 defaults:
+  - common: iceflow_offline
+
   - /user/conf/processes@processes:
       - smb_accmelt
       - clim_aletsch
@@ -32,14 +34,14 @@ inputs:
 
 processes:
   smb_accmelt:
-    weight_accumulation: 1.062
-    weight_ablation: 1.304
+    weight_accumulation: 1.84
+    weight_ablation: 2.01
 
   iceflow:
     physics:
       sliding:
-        tau_ref: 0.2      # basal shear stress (MPa) at the reference speed u_ref
-        u_ref: 35.0       # tau_ref IS tau_b at a typical ~35 m/yr Aletsch trunk speed
+        tau_ref: 0.325 # basal shear stress (MPa) required to ...
+        u_ref: 100.0   # ... achieve u_ref basal sliding speed (m/yr)
 
   time:
     start: 1880.0
