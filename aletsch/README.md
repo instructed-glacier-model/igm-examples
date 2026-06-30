@@ -234,7 +234,7 @@ Hydra multirun, run in parallel via the joblib launcher (one-off
 
 ```bash
 igm_run -m +experiment=params_C_offline \
-    processes.data_assimilation.regularization.thk=1,3,10,30,100,300,1000,3000,10000 \
+    assimilations.data_assimilation.regularization.thk=1,3,10,30,100,300,1000,3000,10000 \
     hydra/launcher=joblib hydra.launcher.n_jobs=3 \
     hydra.sweep.dir=outputs/DA_step2
 ```
