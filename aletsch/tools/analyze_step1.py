@@ -94,7 +94,7 @@ def main():
 
     for nc_path in nc_files:
         reg = parse_param(nc_path, args.results_dir,
-                          "processes.data_assimilation.regularization.thk")
+                          "assimilations.data_assimilation.regularization.thk")
         if reg is None:
             rel = os.path.relpath(nc_path, args.results_dir)
             print(f"  [skip] Cannot parse reg weight from: {rel}")
