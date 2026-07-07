@@ -9,3 +9,6 @@ optimization_results.csv
 pareto_front.png
 misfit_maps.png
 params_E_former.yaml
+# local-only experiment: needs the field_inversion_testing branch of IGM
+# (divfluxfcz misfit, optimization.method, per-variable scale)
+experiment/params_D_offline_multi.yaml

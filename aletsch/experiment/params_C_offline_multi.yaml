@@ -1,0 +1,77 @@
+# @package _global_
+
+# Part C: ice-thickness data assimilation with multi-control optimization
+
+core:
+  hardware:
+    visible_gpus: [0]
+
+defaults:
+  - common: iceflow_offline
+  - override /inputs:
+    - local
+  - override /assimilations:
+    - data_assimilation
+  - override /processes:
+    - iceflow
+
+inputs:
+  local:
+    filename: input.nc
+
+processes:
+  iceflow:
+    physics:
+      sliding:
+        tau_ref: 0.25 # basal shear stress (MPa) required to ...
+        u_ref: 100.0  # ... achieve u_ref basal sliding speed (m/yr)
+
+assimilations:
+  data_assimilation:
+    control_list:
+      - thk
+      - tau_ref
+      - usurf
+    cost_list:
+      - velsurf
+      - icemask
+      - usurf
+      - thk
+      - divfluxfcz
+    optimization:
+      nbitmax: 2500
+      step_size: 0.9
+      retrain_iceflow_model: false
+      step_size_decay: 0.95
+      pertubate: True
+      patience: 200
+    fitting:
+      usurfobs_std: 0.3
+      velsurfobs_std: 0.25
+      thkobs_std: 1
+      # divfluxobs_std is the smoothness <-> fit master knob: it keeps divflux
+      # close to a smooth linear-in-elevation target (an SMB-like pattern), the
+      # key to a shock-free transient start. 
+      divfluxobs_std: 0.1
+    regularization:
+      thk: 1.0e4
+      to_regularize: thk
+      tau_ref: 1.0e8
+    scaling:
+      thk: 1
+      tau_ref: 0.01
+    output:
+      plot2d_live: false
+      save_result_in_ncdf: geology-optimized.nc
+      save_iterat_in_ncdf: true
+      vars_to_save:
+        - usurf
+        - thk
+        - tau_ref
+        - velbase_mag
+        - velsurf_mag
+        - velsurfobs_mag
+        - sliding_ratio
+        - divflux
+        - icemask
+        - thkobs

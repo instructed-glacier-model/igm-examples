@@ -280,6 +280,29 @@ than Step 1's frozen emulator, at the cost of being slower.
 igm_run +experiment=params_C_online hydra.run.dir=outputs/DA_step4
 ```
 
+### Step 5 — Multi-control inversion (`params_C_offline_multi.yaml`)
+
+The same machinery, but inverting **three controls simultaneously** — ice
+thickness (`thk`), basal friction (`tau_ref`), and surface elevation
+(`usurf`) — against **multiple observations at once**: surface velocities,
+the surface DEM, radar (GPR) thickness profiles, and a flux-divergence
+constraint (`divfluxfcz`, which keeps `divflux` close to a smooth
+linear-in-elevation, SMB-like target — the key to using the assimilated
+state as a shock-free start for transient runs). The regularization weights
+of `thk` and `tau_ref` were calibrated by L-curve analysis.
+
+```bash
+igm_run +experiment=params_C_offline_multi hydra.run.dir=outputs/DA_step5
+```
+
+This achieves a *simultaneous* fit of all targets (velocity RMSE of a few
+m/yr, radar thickness RMSE of ~10 m, smooth divergence). **A strong word of
+caution, however**: inverting several controls at once very likely admits
+**non-unique solutions** — friction and geometry can compensate each other
+(e.g. slippery-and-thin vs sticky-and-thick basal regimes producing nearly
+identical surface velocities), so an excellent fit to all observations does
+*not* mean each recovered field is individually correct.
+
 ---
 
 # Part D — Field inversion (`field_inversion` module)
