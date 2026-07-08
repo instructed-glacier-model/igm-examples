@@ -57,4 +57,5 @@ processes:
 
 outputs:
   plot2d:
-    live: False
+    live: True   # display live on screen (needs an interactive matplotlib backend);
+                 # set to False to instead save one PNG per saved step
