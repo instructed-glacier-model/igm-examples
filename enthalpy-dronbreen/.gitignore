@@ -1,0 +1,7 @@
+outputs/
+multirun/
+plots/
+optuna_cts.db
+optimization_results.csv
+climate_ref.nc
+*.log

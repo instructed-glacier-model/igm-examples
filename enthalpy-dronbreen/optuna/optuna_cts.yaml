@@ -1,0 +1,49 @@
+# Single-objective Optuna study for the Drønbreen enthalpy example (Step 2).
+#
+# Minimises `cost_cts` -- the mean RMSE, over the 10 GPR lines, between the modelled
+# cold-temperate transition surface and the observed one. The cost is produced by the
+# `track_cts_err` process module at the end of each run.
+#
+# The three parameters control the two heat sources that set the thermal structure:
+#   * T_ela                - temperature imposed above the ELA (the refreezing proxy),
+#                            i.e. heat delivered from above by meltwater refreezing
+#   * ela                  - the altitude above which it applies
+#   * basal_heat_flux_ref  - geothermal flux, i.e. heat delivered from below. Poorly
+#                            known in Svalbard, and it directly controls basal melting.
+#
+# The length of the spin-up is deliberately NOT a parameter. The modelled CTS settles
+# within ~70 years of the start, so with a 1900 start every trial is already in
+# equilibrium and the start date has no effect on the cost.
+
+objectives:
+  - name: cost_cts
+    direction: minimize
+
+n_trials: 40
+n_jobs: 3            # three concurrent runs saturate a single mid-range GPU
+gpu_allow_growth: true
+
+storage: sqlite:///optuna_cts.db
+study_name: dronbreen_cts
+
+sampler:
+  method: TPESampler
+
+parameters:
+  - name: processes.clim_carra_ela.T_ela
+    type: float
+    low: -0.5
+    high: 2.0
+    log: false
+
+  - name: processes.clim_carra_ela.ela
+    type: float
+    low: 650.0
+    high: 720.0
+    log: false
+
+  - name: processes.enthalpy.thermal.basal_heat_flux_ref
+    type: float
+    low: 0.030        # W m^-2; brackets the Svalbard estimates around the
+    high: 0.080       # 0.040 of Schäfer et al. (2012) and IGM's 0.065 default
+    log: false

@@ -39,6 +39,8 @@ TF_CPP_MIN_LOG_LEVEL=3 igm_run +experiment=params
 
 - **`paleo-alps`** — Paleo glacier modeling for the European Alps around the last glacial maximum (LGM, ~24 ka BP).
 
+- **`enthalpy-dronbreen`** — Polythermal ice on a Svalbard glacier with the `enthalpy` and `subglacial_hydrology` modules, calibrated against radar-mapped cold–temperate transition surfaces with Optuna.
+
 ## Deprecated Examples
 
 The following examples are kept for reference but are deprecated:
