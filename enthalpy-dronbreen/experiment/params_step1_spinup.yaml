@@ -1,0 +1,92 @@
+# @package _global_
+
+# Step 1: thermal spin-up of a polythermal glacier
+#
+# Drønbreen (Svalbard) run forward from 1900 to 2022 under a constant climate, on a
+# FIXED geometry: there is no `thk` process in the list below, so the ice surface never
+# moves and only the thermal state evolves. That is the honest setup for this problem --
+# the observations being reproduced are a thermal structure, not a geometry -- and it
+# keeps the run cheap enough for a tutorial.
+#
+# Run with:
+#   igm_run +experiment=params_step1_spinup
+
+defaults:
+  - common: iceflow_molho                                     # shared ice-flow setup
+  - /user/conf/processes@processes.clim_carra_ela: clim_carra_ela
+  - override /inputs:
+    - local
+  - override /processes:
+    # Order matters twice over: `arrhenius` must see the temperature computed by
+    # `enthalpy`, and `subglacial_hydrology` in till_storage mode requires `enthalpy`
+    # to have run before it.
+    - clim_carra_ela          # surface air temperature -> enthalpy boundary condition
+    - iceflow                 # velocities -> strain and friction heating
+    - enthalpy                # the thermal state: E, E_pmp, T, omega
+    - arrhenius               # temperature-dependent flow factor -> back into iceflow
+    - subglacial_hydrology    # till water storage -> effective pressure
+    - time
+  - override /outputs:
+    - local
+
+inputs:
+  local:
+    filename: input_dronbreen.nc
+
+processes:
+  # Best fit from the Step 2 calibration: mean CTS misfit 18.8 m over the ten radar
+  # lines, from a 64-trial sweep. Two trials tie at that misfit with very different
+  # forcings (see the geothermal flux note below); the one kept here is the one whose
+  # geothermal flux is closest to the published Svalbard estimate.
+  clim_carra_ela:
+    ela: 666.0         # m a.s.l.
+    T_ela: 0.42        # deg C imposed above the ELA -- the refreezing proxy
+
+  enthalpy:
+    numerics:
+      Nz: 30           # a fine vertical grid, packed towards the bed by vert_spacing:
+      vert_spacing: 4.0  # this is where the cold-temperate transition sits
+    thermal:
+      # W m^-2. Calibrated, but only weakly: trials from 0.044 to 0.080 all land within
+      # 1 m of the best misfit, so the radar does not really pin this down. The value
+      # kept here is the best-fitting one that also sits near the published Svalbard
+      # estimate of 0.040 (Schäfer et al., 2012); IGM's own default is 0.065.
+      basal_heat_flux_ref: 0.044
+    surface:
+      T_offset: 0.0
+
+  arrhenius: {}
+
+  subglacial_hydrology:
+    mode: till_storage         # Tulaczyk till hydrology (Bueler & van Pelt, 2015)
+    till_storage:
+      h_water_till_max: 2.0    # m, till capacity
+      drainage_rate: 0.001     # m/yr, basal drainage
+      N_ref: 1.0e-3            # MPa
+      e_ref: 0.69
+      C_c: 0.12
+      delta: 0.02
+
+  time:
+    # 122 years is comfortably more than the thermal adjustment time of this glacier:
+    # the modelled CTS settles within ~70 years of the start, and running from 1600
+    # instead changes the misfit by under 2% for four times the compute.
+    start: 1900.0
+    end: 2022.0
+    save: 20.0
+
+outputs:
+  local:
+    vars_to_save:
+      - topg
+      - usurf
+      - thk
+      - icemask
+      - uvelsurf
+      - vvelsurf
+      - velsurf_mag
+      - arrhenius
+      - E                # enthalpy, on the 30-layer thermal grid
+      - E_pmp            # enthalpy at the pressure melting point
+      - T                # temperature
+      - omega            # water content fraction

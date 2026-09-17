@@ -1,0 +1,90 @@
+# @package _global_
+
+# Step 2: calibrate the surface thermal forcing against radar-observed CTS
+#
+# The same model as Step 1, plus the `track_cts_err` process, which compares the
+# modelled cold-temperate transition surface with 10 GPR profiles and writes the mean
+# RMSE to state.score["cost_cts"]. Optuna minimises that cost over the two parameters
+# of the refreezing proxy and the length of the spin-up.
+#
+# Run the sweep with:
+#   igm_run -m +experiment=params_step2_optuna \
+#           hydra/sweeper=igm_optuna \
+#           hydra.sweeper.optuna_config=optuna/optuna_cts.yaml
+#
+# Or run a single trial at the default parameters, to check the cost is computed:
+#   igm_run +experiment=params_step2_optuna
+
+defaults:
+  - common: iceflow_molho
+  - /user/conf/processes@processes.clim_carra_ela: clim_carra_ela
+  - /user/conf/processes@processes.track_cts_err: track_cts_err
+  - override /inputs:
+    - local
+  - override /processes:
+    - track_cts_err           # loads the observations up front, scores the run at the end
+    - clim_carra_ela
+    - iceflow
+    - enthalpy
+    - arrhenius
+    - subglacial_hydrology
+    - time
+  - override /outputs:
+    - local
+
+# All trials land in one fixed folder rather than a timestamped one. The IGM Optuna
+# sweeper names each subdirectory after the Optuna trial number, so trials stay unique
+# across successive sweeps of the same study.
+hydra:
+  sweep:
+    dir: multirun/optuna_cts
+
+inputs:
+  local:
+    filename: input_dronbreen.nc
+
+processes:
+  clim_carra_ela:
+    ela: 675
+    T_ela: 1.5         # both overridden by the sweeper; see optuna/optuna_cts.yaml
+
+  track_cts_err:
+    glacier_name: "dronbreen"
+    year_obs: 2022
+
+  enthalpy:
+    numerics:
+      Nz: 30
+      vert_spacing: 4.0
+    thermal:
+      basal_heat_flux_ref: 0.040
+    surface:
+      T_offset: 0.0
+
+  arrhenius: {}
+
+  subglacial_hydrology:
+    mode: till_storage
+    till_storage:
+      h_water_till_max: 2.0
+      drainage_rate: 0.001
+      N_ref: 1.0e-3
+      e_ref: 0.69
+      C_c: 0.12
+      delta: 0.02
+
+  time:
+    start: 1900.0
+    end: 2022.0
+    save: 122.0       # only the final state is scored, so save just once at the end
+
+outputs:
+  local:
+    vars_to_save:
+      - topg
+      - usurf
+      - thk
+      - E
+      - E_pmp
+      - T
+      - omega

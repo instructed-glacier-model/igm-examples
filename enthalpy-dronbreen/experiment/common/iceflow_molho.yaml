@@ -1,0 +1,47 @@
+# @package _global_
+#
+# Reusable config fragment (see experiment/common/). Pull it into an experiment by
+# listing it FIRST in the defaults list, in dict form:
+#
+#   defaults:
+#     - common: iceflow_molho
+#     - override /inputs: [local]      # ...overrides must come AFTER
+#
+# This fragment: the ice-flow setup shared by both steps of the example. It solves the
+# MOLHO approximation directly, with the `identity` mapping -- the velocity field is
+# the control variable and there is NO neural network to pre-train or retrain. That is
+# the right trade-off here because the geometry is held fixed: the velocity field only
+# has to be recomputed when the temperature-dependent Arrhenius factor changes, so the
+# emulator's speed-up would buy little and would add a training step to explain.
+#
+# Nz=2 is not a typo. MOLHO represents the vertical profile analytically, so two
+# horizontal-velocity degrees of freedom per column are enough. The thermal state is
+# resolved on a much finer grid -- see processes.enthalpy.numerics.Nz.
+processes:
+  iceflow:
+    method: unified
+    numerics:
+      Nz: 2
+      vert_spacing: 4.0
+      basis_vertical: molho
+      basis_horizontal: q1
+    physics:
+      viscosity:
+        arrhenius: 78.0   # MPa^-3 a^-1; temperate ice. Overwritten each step by the
+                          # `arrhenius` process, which derives A from the temperature.
+      sliding:
+        tau_ref: 0.325    # basal shear stress (MPa) required to...
+        u_ref: 500.0      # ...reach this basal sliding speed (m/yr)
+    unified:
+      mapping: identity
+      optimizer: lbfgs
+      nbit: 20            # iterations per re-solve, warm-started from the last solution
+      nbit_init: 200      # iterations for the very first solve, from rest
+      retrain_freq: 5     # re-solve every 5 time steps; the thermal state, and hence
+                          # the viscosity, evolves slowly on a fixed geometry
+      lbfgs:
+        memory: 10
+        alpha_min: 0.0
+      line_search: hager-zhang
+      data_preparation:
+        framesizemax: 99999
