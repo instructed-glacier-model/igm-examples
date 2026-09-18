@@ -1,4 +1,4 @@
-# Drønbreen — polythermal ice with the enthalpy module
+# Drønbreen — polythermal glacier with the enthalpy module
 
 **Modelling the thermal structure of a Svalbard polythermal glacier, and calibrating it
 against ground-penetrating radar.**
@@ -51,7 +51,7 @@ deliberate proxy: **a constant air temperature is imposed above the equilibrium 
 processes:
   clim_carra_ela:
     ela: 666.0         # m a.s.l.
-    T_ela: 0.42   # °C imposed above it
+    T_ela: 0.42        # °C imposed above it
 ```
 
 These values, and the geothermal flux, come from the Step 2 calibration. They are a
