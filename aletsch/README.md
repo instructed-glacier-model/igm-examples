@@ -107,8 +107,8 @@ igm_run +experiment=params_A_step5
 # Part B — Data assimilation by hyperparameter tuning
 
 The first data-assimilation strategy. Rather than inverting a spatial field, it
-treats a few **scalar model parameters** as unknowns and uses the **Optuna**
-sweeper to search the values that best reproduce observations. The forward model
+treats a few scalar SMB model parameters as unknowns and uses the **Optuna**
+sweeper to search for the values that best reproduce DEM observations. The forward model
 is the realistic climate/SMB setup of Part A Steps 3–4 (`clim_aletsch` +
 `smb_accmelt` + observation tracking), but with the on-line retrained iceflow
 solver (Step 5), run from 1880 to 2020.
@@ -139,11 +139,11 @@ pip install optuna-dashboard          # one-off install
 optuna-dashboard sqlite:///optuna_1obj.db 
 ```
 
-**Optimal parameters found:** the best trial achieved `cost_usurf = XXX` (mean
-STD between modelled and observed surface elevations across all 7 observation
-years) with `weight_accumulation = 1.84`, `weight_ablation = 2.01`. These
+**Optimal parameters found:** in testing, the lowest misfit was achieved with `weight_accumulation = 1.84`, `weight_ablation = 2.01`. These
 optimized values are used as the defaults in the realistic forward runs
 (Part A, Steps 3–4) and as the baseline here.
+
+**GPU distribution:** Note that although Optuna runs 4 trials "in parallel", by default they all run on the same GPU. Information about alternative GPU distribution strategies can be found [here](https://igm-model.org/latest/hydra/optuna_cluster/#gpu-distribution).
 
 ### Step 2: Multi-objective optimization (`params_B_2obj.yaml`)
 
@@ -164,6 +164,7 @@ shear stress at a typical Aletsch trunk speed).
 igm_run +experiment=params_B_2obj
 
 # With NSGA-II multi-objective optimization (200 trials, 4 in parallel):
+# Note that this can take several hours to run!
 igm_run -m +experiment=params_B_2obj \
         hydra/sweeper=igm_optuna \
         hydra.sweeper.optuna_config=optuna/optuna_2obj_params.yaml
