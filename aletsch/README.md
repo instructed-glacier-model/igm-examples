@@ -24,8 +24,7 @@ state from observations. Each has different strengths; they are summarised here:
 
 **Prerequisites**
 
-First install IGM and its dependencies by following the installation steps at
-**https://igm-model.org/**. That already provides everything Parts A–E and the
+First install IGM and its dependencies by following the installation steps [here](https://igm-model.org/latest/installation/quick_start/). That already provides everything Parts A–E and the
 `tools/` scripts need.  
 
 **Tip:** prefix any command with `TF_CPP_MIN_LOG_LEVEL=3` to silence verbose
