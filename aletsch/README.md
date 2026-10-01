@@ -19,7 +19,7 @@ state from observations. Each has different strengths; they are summarised here:
 |------|----------|-------------------|--------------|
 | **B** | Hyperparameter tuning | Optuna sweeper | Searches a few scalar model parameters (SMB weights, sliding) that best reproduce the observed DEMs and velocities. |
 | **C** | Control optimisation | `data_assimilation` | Inverts the ice thickness from surface velocities. |
-| **D** | Control optimisation  | `field_inversion` | nverts the ice thickness from surface velocities. Newer; set to **replace `data_assimilation`** in the long term. |
+| **D** | Control optimisation  | `field_inversion` | Inverts the ice thickness from surface velocities. Newer; set to **replace `data_assimilation`** in the long term. |
 | **E** | Time relaxation | `time_relaxation` | Nudges several fields jointly inside a transient forward run until model and observations are mutually consistent. |
 
 **Prerequisites**
@@ -210,7 +210,7 @@ data-assimilation setup:
 - **Ice flow**: the `unified` iceflow — the off-line trained emulator in Steps 1–3 (`params_C_offline`), or the on-line retrained solver in Step 4 (`params_C_online`, retrained every 50 iterations)
 - **Control variable**: ice thickness (`thk`)
 - **Cost function**: surface velocity misfit (`velsurf`) + ice-mask penalty (`icemask`)
-- **Optimizer**: ADAM with learning-rate decay, up to 1000 iterations
+- **Optimizer**: Adam with learning-rate decay, up to 1000 iterations
 - **Regularization**: gradient penalty on `thk` (weight `regularization.thk`)
 
 ### Step 1 — Single inversion (off-line trained emulator)
@@ -219,7 +219,7 @@ data-assimilation setup:
 igm_run +experiment=params_C_offline hydra.run.dir=outputs/DA_step1
 ```
 
-This takes ~15 min on a GPU. Key result files in `outputs/DA_step1/`:
+This takes 1–5 min on a GPU. Key result files in `outputs/DA_step1/`:
 - `geology-optimized.nc` — final ice thickness, velocities and other fields
 - `optimize.nc` — optimization history (iterations)
 
@@ -244,7 +244,7 @@ python tools/analyze_step1.py outputs/DA_step2
 ```
 
 This produces `lcurve_step1.png` (L-curve + misfit-vs-regularization). The elbow
-(typically reg ≈ 10–30 for Aletsch) indicates the best balance.
+(typically reg ≈ 100–300 for Aletsch) indicates the best balance.
 
 ### Step 3 — Sliding-coefficient sweep with thickness validation
 
@@ -309,7 +309,7 @@ identical surface velocities), so an excellent fit to all observations does
 
 A newer, lighter inversion route that is set to replace `data_assimilation`
 (Part C) in the long term. Instead of running the glacier forward in time, the
-`field_inversion` module solves a single **bounded optimisation** for the
+`field_inversion` module solves a single **bounded optimization** for the
 spatially-varying ice thickness (`thk`) that best reproduces observed surface
 velocities. The objective combines a **misfit** term (`velsurf`, Huber loss
 between modelled `uvelsurf/vvelsurf` and observed `uvelsurfobs/vvelsurfobs`) and
@@ -367,9 +367,9 @@ diagnostics, plus two figures comparing thickness and surface-velocity misfit.
 
 *(forward time-relaxation data assimilation as used by Frank and al., 2026 ; modified after an original implementation by T. Frank)*
 
-Instead of a one-shot inversion, the **`time_relaxation`** module integrates the
-forward ice-flow model for **500 years** while a few **control fields are nudged
-a little at every time step**, so the modelled glacier slowly relaxes onto the
+Instead of a one-shot inversion, the `time_relaxation` module integrates the
+forward ice-flow model for 500 years while a few control fields are nudged
+a little at every time step, so the modelled glacier slowly relaxes onto the
 observations. By the end, geometry, mass balance and velocity are mutually
 consistent and match the data.
 
