@@ -381,11 +381,11 @@ module, which *replaces* the usual `time` module.
 
 **What this example fits.** Three steps run together:
 
-| Control nudged | Driven to match | Step |
+| Control nudged | Residual to minimize | Step |
 |---|---|---|
-| `thk` (ice thickness) | flux divergence `divflux` → apparent mass balance `amb = smb − dhdt_obs` | `amb_thk` |
+| `thk` (ice thickness) | `(amb − divflux)`, where `divflux` is flux divergence, and `amb = smb − dhdt_obs` is apparent mass balance | `amb_thk` |
 | `usurf` (surface elevation) | same shared AMB residual `(amb − divflux)` | `amb_usurf` |
-| `tau_ref` (basal friction) | observed surface speed `velsurf_magobs` | `friction` |
+| `tau_ref` (basal friction) | observed surface speed error `velsurf_mag − velsurf_magobs` | `friction` |
 
 The first two are the **apparent-mass-balance bed inversion** of *Frank & van
 Pelt (2025)*: `thk` and `usurf` are perturbed jointly until the modelled flux
