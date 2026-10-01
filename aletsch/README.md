@@ -374,8 +374,8 @@ observations. By the end, geometry, mass balance and velocity are mutually
 consistent and match the data.
 
 **The method.** `time_relaxation` is fully generic — a run is a list of
-independent `steps`, each an orthogonal triple `(residual, update law, control)`.
-A control field `C` is nudged so a residual `r` between a modelled quantity `M`
+independent `steps`, each a triple `(residual, update law, control)`.
+A control field `C` is nudged, according to an update law, so a residual `r` between a modelled quantity `M`
 and a target `T` is driven toward zero. The whole inner loop runs inside the
 module, which *replaces* the usual `time` module. 
 
@@ -389,10 +389,10 @@ module, which *replaces* the usual `time` module.
 
 The first two are the **apparent-mass-balance bed inversion** of *Frank & van
 Pelt (2025)*: `thk` and `usurf` are perturbed jointly until the modelled flux
-divergence equals the apparent mass balance. The third is a classic friction
+divergence equals the apparent mass balance. Here, `smb` is a prescribed SMB via the `smb` module, and `dhdt_obs` is the observed rate of change of thickness. The third is a classic friction
 inversion nudging `tau_ref` until modelled `velsurf_mag` matches the observed
 surface speed; it runs on a slow cadence (every 50 yr, `cadence: 50.0`) through
-to `end_time: 500`.
+to `end_time: 500`. In general the module does not need to run with all three steps, e.g. the user can choose to have only `thk` and `usurf` as controls by removing the `friction` step from the parameter file.
 
 Two ice-flow back-ends are provided, mirroring Part C:
 
