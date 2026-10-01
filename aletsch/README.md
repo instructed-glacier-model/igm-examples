@@ -41,7 +41,7 @@ one, introducing new features.
 
 ### Step 1: Simple ELA-based SMB (`params_A_step1.yaml`)
 
-The simplest setup: we simulate the evolution of the Aletsch Glacier over 100 years (1900–2000) using the built-in `smb` module (method `simple`) with a time-varying Equilibrium Line Altitude (ELA). For simplicity, Steps 1–4 use the off-line trained iceflow emulator (`common: iceflow_offline`), which requires no knowledge of IGM's iceflow machinery — see Step 5 for the emulator-vs-solver distinction.
+The simplest setup: we simulate the evolution of the Aletsch Glacier over 100 years (1900–2000) using the built-in `smb` module (method `simple`, which models the SMB with an elevation-dependent piecewise linear profile) with a time-varying Equilibrium Line Altitude (ELA). For simplicity and speed, Steps 1–4 use the off-line trained iceflow emulator (`common: iceflow_offline`) — see Step 5 for the emulator-vs-solver distinction.
 
 ```bash
 igm_run +experiment=params_A_step1
@@ -78,7 +78,7 @@ During the simulation, IGM reports the mismatch against the known observed DEMs;
 
 ### Step 4: With particle tracking (`params_A_step4.yaml`)
 
-Same as Step 3, but adds particle tracking (simply by adding the `particles` module to the parameter file) to visualise ice-flow paths. Here we use a user-defined particle seeding (a custom user module) to highlight the two main regions responsible for debris production, which directly build the two legendary moraines of the Aletsch Glacier.
+Same as Step 3, but adds particle tracking (simply by adding the `particles` module to the parameter file) to visualise ice-flow paths. Here we use a user-defined particle seeding (a custom user module) to highlight the two main regions responsible for debris production, which directly build the two legendary moraines of the Aletsch Glacier. Note that the particle tracking method adds even more computational expense, and this simulation may take >10 minutes to run on GPU.
 
 ```bash
 igm_run +experiment=params_A_step4
@@ -90,11 +90,13 @@ Identical to Step 1 (the same simple-ELA run, 1900–2000) **except for the
 iceflow component**: it uses the **on-line retrained iceflow solver**
 (`common: iceflow_online`) instead of the off-line trained emulator. The two differ in what the neural network actually does:
 
-- **Off-line trained iceflow emulator** (Steps 1–4, `iceflow_offline`): a network
+- **Off-line pretrained iceflow emulator** (Steps 1–4, `iceflow_offline`): a network
   pretrained beforehand and used **frozen** — it *emulates* the ice-flow physics
-  learned offline from a large catalogue of modelled glaciers, with no training during the run. This is the easiest option for modelling "standard" mountain glaciers, as it avoids retraining a network or tuning training settings. It should, however, only be used for glaciers similar to those it was trained on: typical mountain-glacier geometries at 50–250 m horizontal resolution, and it currently supports only the 2-layer MOLHO vertical basis.
+  learned offline from a large catalogue of modelled glaciers, with no training during the run. While this is the easiest and fastest option for modelling "standard" mountain glaciers, it should only be used for glaciers similar to those it was trained on.
   
-- **On-line retrained iceflow solver** (this step, and Parts B–E, `iceflow_online`): the network is trained from scratch at initialisation and **retrained on the fly** every few time steps to minimise the actual ice-flow energy — so it *solves* the physics for the current state, adapting to the evolving geometry and to whatever sliding/rheology you set. This is the most generic option and can handle essentially any ice flow, including applications far outside the off-line emulator's training domain — such as the Greenland or Antarctic ice sheets, marine-terminating or floating ice, surging glaciers, strongly hydrology-controlled sliding, or very different grid resolutions. It does, however, come with extra numerical parameters that must be tuned, plus additional numerical experiments to validate them (to assess the fidelity against the reference identity mapping).
+- **On-line retrained iceflow emulator** (this step, and Parts B–E, `iceflow_online`): the network is trained from scratch at initialisation and **retrained** every few time steps to minimise the actual ice-flow energy — so it *solves* the physics for the current state, adapting to the evolving geometry and to whatever sliding/rheology you set. This is the most generic option and is intended to handle essentially any ice flow, including applications far outside the off-line emulator's training domain.
+
+More information on both emulated approaches, and the `identity` mapping (direct solver) approach, is available in the [IGM documentation](https://igm-model.org/latest/emulators/pretrained_emulator/).
 
 ```bash
 igm_run +experiment=params_A_step5
