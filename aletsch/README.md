@@ -317,21 +317,19 @@ velocities. The objective combines a **misfit** term (`velsurf`, Huber loss
 between modelled `uvelsurf/vvelsurf` and observed `uvelsurfobs/vvelsurfobs`) and
 a **regularization** term on `thk` (squared-Laplacian smoothness referenced to
 the surface `usurf`), with the thickness bounded to `[0, 1000] m`. Forward
-velocities come from the off-line trained iceflow emulator (the shipped pretrained
-`dahunet_mini.keras` network); the inversion itself uses an L-BFGS optimiser
+velocities come from the off-line pretrained iceflow emulator; the inversion itself uses an L-BFGS optimizer
 (Hager–Zhang line search).
 
 ### Step 1 — Real-world inversion (`params_D_real.yaml`)
 
-Inverts directly the **real Aletsch observations** stored in `data/input.nc`.
+Inverts directly the observed Aletsch velocities stored in `data/input.nc`.
 
 Key points of using real data:
-- There is **no ground-truth thickness**, so inspect the result through the
+- There is no full-coverage ground-truth thickness field, so inspect the result through the
   iterative `optimize.nc` and the final `output.nc`.
-- Observed surface velocities cover only part of the glacier (~73% of cells are
-  NaN); the misfit term automatically restricts the cost to finite observations
+- Observed surface velocities cover only part of the `icemask` domain; the misfit term automatically restricts the cost to finite observations
   intersected with `icemask`, so gaps are handled cleanly (`mask: icemask`).
-- The basal sliding parameter is genuinely unknown, so `tau_ref` is set to the
+- The basal sliding parameter is unknown, so `tau_ref` is set to the
   in-distribution default value (0.213 MPa at u_ref=100).
 
 ```bash
@@ -355,8 +353,8 @@ since we invert for thickness only.
 igm_run +experiment=params_D_synthetic
 ```
 
-Writes the inverted fields to `output.nc` alongside `inverse_accuracy`
-diagnostics, plus two figures comparing thickness and surface-velocity misfit.
+Writes the inverted fields to `output.nc`. This experiment also includes `inverse_accuracy`, a custom module that prints
+diagnostics to the terminal and creates two figures (as `.png` files) comparing thickness and surface-velocity misfit.
 
 > **Note:** `data_assimilation` (Part C), `field_inversion` (Part D) and
 > `time_relaxation` (Part E) are complementary assimilation routes. Parts C and D
