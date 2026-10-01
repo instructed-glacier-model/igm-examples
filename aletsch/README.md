@@ -202,9 +202,9 @@ python tools/plot_misfit_maps.py --run multirun/<date>/<trial_number>
 
 Recovers the ice thickness from surface observations using IGM's
 `data_assimilation` module. The inversion optimizes the ice thickness field so
-that modelled surface velocities (Blatter–Pattyn physics) best match observed
-velocities, while regularization keeps the solution physically plausible. This
-is IGM's current inversion but `field_inversion` will be its successor.
+that IGM-modelled surface velocities best match observed
+velocities, while regularization helps to ensure a plausibly smooth thickness field. This
+is IGM's current inversion module, and will eventually be phased out in favour of the new `field_inversion` module.
 
 Steps 1–3 use `params_C_offline.yaml` (off-line trained emulator); Step 4 uses
 `params_C_online.yaml` (on-line retrained solver). Both share the same
@@ -250,7 +250,7 @@ This produces `lcurve_step1.png` (L-curve + misfit-vs-regularization). The elbow
 
 ### Step 3 — Sliding-coefficient sweep with thickness validation
 
-When thickness observations (GPR) are available, they can validate the inversion
+When thickness observations are available, they can validate the inversion
 and constrain the sliding coefficient. Sweep `physics.sliding.tau_ref` with the
 regularization weight fixed:
 
@@ -287,10 +287,10 @@ igm_run +experiment=params_C_online hydra.run.dir=outputs/DA_step4
 The same machinery, but inverting **three controls simultaneously** — ice
 thickness (`thk`), basal friction (`tau_ref`), and surface elevation
 (`usurf`) — against **multiple observations at once**: surface velocities,
-the surface DEM, radar (GPR) thickness profiles, and a flux-divergence
+the surface DEM, radar thickness profiles, and a flux-divergence
 constraint (`divfluxfcz`, which keeps `divflux` close to a smooth
-linear-in-elevation, SMB-like target — the key to using the assimilated
-state as a shock-free start for transient runs). The regularization weights
+linear-in-elevation, SMB-like target, helping to reduce shock during transient runs when initializing from the assimilated
+state). The regularization weights
 of `thk` and `tau_ref` were calibrated by L-curve analysis.
 
 ```bash
