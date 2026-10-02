@@ -225,6 +225,8 @@ This takes 1–5 min on a GPU. Key result files in `outputs/DA_step1/`:
 - `geology-optimized.nc` — final ice thickness, velocities and other fields
 - `optimize.nc` — optimization history (iterations)
 
+Note also that we have set a working directory via `hydra.run.dir`, to clearly label our results and make them easy to find.
+
 
 ### Step 2 — L-curve analysis (velocity only)
 
