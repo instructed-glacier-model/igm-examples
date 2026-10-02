@@ -11,7 +11,9 @@ every configuration lives in a single `experiment/` directory, run with
 forward in time — built up in steps of increasing complexity (simple ELA SMB →
 custom SMB module → realistic climate/SMB → particle tracking). Steps 1–4 all use
 the fast **off-line trained iceflow emulator**; Step 5 repeats Step 1 with the
-**on-line retrained iceflow solver** to contrast the two. **Parts B–E** then present four **alternative
+**on-line retrained iceflow solver** to contrast the two. 
+
+**Parts B–E** then present four **alternative
 strategies for data assimilation**, i.e. for constraining model parameters or
 state from observations. Each has different strengths; they are summarised here:
 
