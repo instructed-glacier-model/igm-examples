@@ -2,7 +2,7 @@
 
 # Part E — Data assimilation by time_relaxation — ONLINE solver
 #
-# Runs the forward ice-flow model for 500 years while *nudging* three control
+# Runs the forward ice-flow model for 800 years while *nudging* three control
 # fields a little at every step, so the modelled glacier slowly relaxes onto the
 # observations. By the end geometry, mass balance and velocity are mutually
 # consistent with the data.
@@ -16,9 +16,8 @@
 #
 # This version uses the ON-LINE retrained iceflow solver: the network is
 # retrained on the fly, so it stays physically consistent as the geometry and
-# tau_ref evolve -> robust (no out-of-distribution drift) and a tighter velocity
-# fit than the offline emulator, at the cost of being slower. The tau_ref clamp
-# [0.05, 0.5] MPa is kept as a physical (not numerical) bound.
+# tau_ref evolve -> robust (no out-of-distribution drift), at the cost of being slower.
+# The tau_ref clamp [0.05, 0.5] MPa is kept as a physical (not numerical) bound.
 #
 # Run with:  conda activate igm && igm_run +experiment=params_E_online
 
@@ -52,12 +51,13 @@ processes:
   iceflow:
     physics:
       sliding:
-        # Start the friction control field near its optimum: the time_relaxation
-        # friction inversion only nudges tau_ref in gentle bounded multiplicative
-        # kicks, so it cannot travel far during the run. Starting at 0.06 (as in
-        # params_E_online) gives rmse_vel ~11; starting at 0.325 leaves it ~15.
         tau_ref: 0.1    # basal shear stress (MPa) at the reference speed u_ref
         u_ref:   100.0   # ... = 100 m/yr
+    unified:
+      # using soap optimizer as a more stable alternative to Adam
+      # --> we use divflux here which is sensitive to small changes in physics
+      # all other settings from common iceflow_online params
+      optimizer: soap   
 
   smb:
     method: simple
@@ -65,7 +65,7 @@ processes:
       update_freq: 1.0
       array:
         - ["time", "gradabl", "gradacc", "ela", "accmax"]
-        - [0, 0.007, 0.004, 3050, 2.0]
+        - [0, 0.0075, 0.0025, 3050, 2.0]
 
 assimilations:
   time_relaxation:
@@ -81,9 +81,9 @@ assimilations:
 
     time:
       start: 0.0
-      end:   500.0
+      end:   800.0
       step:  0.1
-      save:  50.0                    # 11 snapshots (t = 0, 50, ..., 500)
+      save:  50.0                    # 17 snapshots (t = 0, 50, ..., 800)
       cfl:   0.2
 
     steps:
@@ -98,7 +98,7 @@ assimilations:
           current: divflux
         update:
           kind: additive
-          alpha: 0.10
+          alpha: 0.60
         control:
           field: thk
           bounds: [0.0, 2000.0]
@@ -113,7 +113,7 @@ assimilations:
           current: divflux
         update:
           kind: additive
-          alpha: 0.03
+          alpha: 0.05
         control:
           field: usurf
           floor_at: topg
@@ -129,6 +129,8 @@ assimilations:
           target: velsurf_magobs
           current: velsurf_mag
           eps: 1.0
+          atol: 10.0               # we consider a point converged if modelded and observed velocities agree within 10 m/yr ...
+          rtol: 0.1                # ... OR if their relative misfit is less than 10%
         update:
           kind: multiplicative_linear
           alpha: -1.0
@@ -138,7 +140,6 @@ assimilations:
           bounds: [0.05, 0.5]      # physical range for u_ref = 100 m/yr
         mask: icemask
         cadence: 50.0
-        end_time: 500.0
 
     outputs:
       misfits:
