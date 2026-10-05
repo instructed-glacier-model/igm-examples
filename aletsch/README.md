@@ -369,11 +369,11 @@ diagnostics to the terminal and creates two figures (as `.png` files) comparing 
 
 # Part E — Data assimilation by time relaxation (`time_relaxation` module)
 
-*(forward time-relaxation data assimilation as used by Frank and al., 2026 ; modified after an original implementation by T. Frank)*
+*(forward time-relaxation data assimilation as used by Frank et al., 2026 ; modified after an original implementation by T. Frank)*
 
-Instead of a one-shot inversion, the `time_relaxation` module integrates the
-forward ice-flow model for 500 years while a few control fields are nudged
-a little at every time step, so the modelled glacier slowly relaxes onto the
+Instead of a one-shot inversion, the **`time_relaxation`** module integrates the
+forward ice-flow model for **800 years** while a few **control fields are nudged
+a little at every time step**, so the modelled glacier slowly relaxes onto the
 observations. By the end, geometry, mass balance and velocity are mutually
 consistent and match the data.
 
@@ -392,11 +392,10 @@ module, which *replaces* the usual `time` module.
 | `tau_ref` (basal friction) | observed surface speed error `velsurf_mag − velsurf_magobs` | `friction` |
 
 The first two are the **apparent-mass-balance bed inversion** of *Frank & van
-Pelt (2025)*: `thk` and `usurf` are perturbed jointly until the modelled flux
-divergence equals the apparent mass balance. Here, `smb` is a prescribed SMB via the `smb` module, and `dhdt_obs` is the observed rate of change of thickness. The third is a classic friction
+Pelt (2024)*: `thk` and `usurf` are perturbed jointly until the modelled flux
+divergence equals the apparent mass balance. The third is a classic friction
 inversion nudging `tau_ref` until modelled `velsurf_mag` matches the observed
-surface speed; it runs on a slow cadence (every 50 yr, `cadence: 50.0`) through
-to `end_time: 500`. In general the module does not need to run with all three steps, e.g. the user can choose to have only `thk` and `usurf` as controls by removing the `friction` step from the parameter file.
+surface speed; it runs on a slow cadence (every 50 yr, `cadence: 50.0`).
 
 Two ice-flow back-ends are provided, mirroring Part C:
 
@@ -408,11 +407,12 @@ igm_run +experiment=params_E_online    # robust: on-line retrained solver (from-
 Both use the `unified` stack. The off-line emulator is fast but valid only near its
 training regime (so `tau_ref` is clamped to a physical `[0.05, 0.5]` MPa); the
 on-line solver is retrained on the fly, so it stays physically consistent as the
-geometry and `tau_ref` evolve — more robust and a tighter velocity fit, but slower.
+geometry and `tau_ref` evolve — more robust, but slower. The SOAP optimizer is used
+to promote stable physics over time which the flux divergence is sensitive to.
 Inputs come from `data/input.nc` (geometry + observations: `thk`,
 `usurf`, `dhdt`, `uvelsurfobs/vvelsurfobs`, `thkobs`, `icemask`). The run writes:
 
-- `output.nc` — 11 snapshots (`t = 0, 50, …, 500 yr`) of `thk, usurf, tau_ref, velsurf_mag, velsurf_magobs, divflux, amb, dhdt, dhdt_obs, …`;
+- `output.nc` — 17 snapshots (`t = 0, 50, …, 800 yr`) of `thk, usurf, tau_ref, velsurf_mag, velsurf_magobs, divflux, amb, dhdt, dhdt_obs, …`;
 - `output_ts.nc` — area/volume time series; `misfits.csv` — per-save residual norms;
 - `fit_dashboard/fit_t<TIME>.png` + `fit_evolution.gif` — a **live 8-panel fit dashboard** rendered each save (surface speed obs/model/residual + `tau_ref` map; apparent mass balance target/modelled/residual + live RMSE-convergence curve). Headless-safe (Agg); set `assimilations.time_relaxation.viz.show: true` for an interactive window.
 
@@ -445,4 +445,5 @@ outlines from Linsbauer et al. (2021).
 - Millan, R. et al. (2019). Mapping surface flow velocity of glaciers at regional scale using a multiple sensors approach. *Remote Sensing*, 11(21), 2498.
 - Grab, M. et al. (2021). Ice thickness distribution of all Swiss glaciers based on extended ground-penetrating radar data and glaciological modeling. *Journal of Glaciology*, 67(266), 1074–1092.
 - Linsbauer, A. et al. (2021). The new Swiss Glacier Inventory SGI2016: From a topographical to a glaciological dataset. *Frontiers in Earth Science*, 774.
-- Frank, Thomas, et al. "Global glacier-free topography reveals a large potential for future lakes in presently ice-covered terrain." Nature Communications 17.1 (2026): 3985.
+- Frank and van Pelt (2024). Ice thickness and volume of all Scandinavian glaciers and ice caps. *Journal of Glaciology* 1-14.
+- Frank, Thomas, et al. "Global glacier-free topography reveals a large potential for future lakes in presently ice-covered terrain." *Nature Communications* 17.1 (2026): 3985.
