@@ -11,7 +11,9 @@ every configuration lives in a single `experiment/` directory, run with
 forward in time — built up in steps of increasing complexity (simple ELA SMB →
 custom SMB module → realistic climate/SMB → particle tracking). Steps 1–4 all use
 the fast **off-line trained iceflow emulator**; Step 5 repeats Step 1 with the
-**on-line retrained iceflow solver** to contrast the two. **Parts B–E** then present four **alternative
+**on-line retrained iceflow solver** to contrast the two. 
+
+**Parts B–E** then present four **alternative
 strategies for data assimilation**, i.e. for constraining model parameters or
 state from observations. Each has different strengths; they are summarised here:
 
@@ -19,13 +21,12 @@ state from observations. Each has different strengths; they are summarised here:
 |------|----------|-------------------|--------------|
 | **B** | Hyperparameter tuning | Optuna sweeper | Searches a few scalar model parameters (SMB weights, sliding) that best reproduce the observed DEMs and velocities. |
 | **C** | Control optimisation | `data_assimilation` | Inverts the ice thickness from surface velocities. |
-| **D** | Control optimisation  | `field_inversion` | nverts the ice thickness from surface velocities. Newer; set to **replace `data_assimilation`** in the long term. |
+| **D** | Control optimisation  | `field_inversion` | Inverts the ice thickness from surface velocities. Newer; set to **replace `data_assimilation`** in the long term. |
 | **E** | Time relaxation | `time_relaxation` | Nudges several fields jointly inside a transient forward run until model and observations are mutually consistent. |
 
 **Prerequisites**
 
-First install IGM and its dependencies by following the installation steps at
-**https://igm-model.org/**. That already provides everything Parts A–E and the
+First install IGM and its dependencies by following the installation steps [here](https://igm-model.org/latest/installation/quick_start/). That already provides everything Parts A–E and the
 `tools/` scripts need.  
 
 **Tip:** prefix any command with `TF_CPP_MIN_LOG_LEVEL=3` to silence verbose
@@ -42,7 +43,7 @@ one, introducing new features.
 
 ### Step 1: Simple ELA-based SMB (`params_A_step1.yaml`)
 
-The simplest setup: we simulate the evolution of the Aletsch Glacier over 100 years (1900–2000) using the built-in `smb` module (method `simple`) with a time-varying Equilibrium Line Altitude (ELA). For simplicity, Steps 1–4 use the off-line trained iceflow emulator (`common: iceflow_offline`), which requires no knowledge of IGM's iceflow machinery — see Step 5 for the emulator-vs-solver distinction.
+The simplest setup: we simulate the evolution of the Aletsch Glacier over 100 years (1900–2000) using the built-in `smb` module (method `simple`, which models the SMB with an elevation-dependent piecewise linear profile) with a time-varying Equilibrium Line Altitude (ELA). For simplicity and speed, Steps 1–4 use the off-line trained iceflow emulator (`common: iceflow_offline`) — see Step 5 for the emulator-vs-solver distinction.
 
 ```bash
 igm_run +experiment=params_A_step1
@@ -79,7 +80,7 @@ During the simulation, IGM reports the mismatch against the known observed DEMs;
 
 ### Step 4: With particle tracking (`params_A_step4.yaml`)
 
-Same as Step 3, but adds particle tracking (simply by adding the `particles` module to the parameter file) to visualise ice-flow paths. Here we use a user-defined particle seeding (a custom user module) to highlight the two main regions responsible for debris production, which directly build the two legendary moraines of the Aletsch Glacier.
+Same as Step 3, but adds particle tracking (simply by adding the `particles` module to the parameter file) to visualise ice-flow paths. Here we use a user-defined particle seeding (a custom user module) to highlight the two main regions responsible for debris production, which directly build the two legendary moraines of the Aletsch Glacier. Note that the particle tracking method adds even more computational expense, and this simulation may take >10 minutes to run on GPU.
 
 ```bash
 igm_run +experiment=params_A_step4
@@ -91,11 +92,13 @@ Identical to Step 1 (the same simple-ELA run, 1900–2000) **except for the
 iceflow component**: it uses the **on-line retrained iceflow solver**
 (`common: iceflow_online`) instead of the off-line trained emulator. The two differ in what the neural network actually does:
 
-- **Off-line trained iceflow emulator** (Steps 1–4, `iceflow_offline`): a network
+- **Off-line pretrained iceflow emulator** (Steps 1–4, `iceflow_offline`): a network
   pretrained beforehand and used **frozen** — it *emulates* the ice-flow physics
-  learned offline from a large catalogue of modelled glaciers, with no training during the run. This is the easiest option for modelling "standard" mountain glaciers, as it avoids retraining a network or tuning training settings. It should, however, only be used for glaciers similar to those it was trained on: typical mountain-glacier geometries at 50–250 m horizontal resolution, and it currently supports only the 2-layer MOLHO vertical basis.
+  learned offline from a large catalogue of modelled glaciers, with no training during the run. While this is the easiest and fastest option for modelling "standard" mountain glaciers, it should only be used for glaciers similar to those it was trained on.
   
-- **On-line retrained iceflow solver** (this step, and Parts B–E, `iceflow_online`): the network is trained from scratch at initialisation and **retrained on the fly** every few time steps to minimise the actual ice-flow energy — so it *solves* the physics for the current state, adapting to the evolving geometry and to whatever sliding/rheology you set. This is the most generic option and can handle essentially any ice flow, including applications far outside the off-line emulator's training domain — such as the Greenland or Antarctic ice sheets, marine-terminating or floating ice, surging glaciers, strongly hydrology-controlled sliding, or very different grid resolutions. It does, however, come with extra numerical parameters that must be tuned, plus additional numerical experiments to validate them (to assess the fidelity against the reference identity mapping).
+- **On-line retrained iceflow emulator** (this step, and Parts B–E, `iceflow_online`): the network is trained from scratch at initialisation and **retrained** every few time steps to minimise the actual ice-flow energy — so it *solves* the physics for the current state, adapting to the evolving geometry and to whatever sliding/rheology you set. This is the most generic option and is intended to handle essentially any ice flow, including applications far outside the off-line emulator's training domain.
+
+More information on both emulated approaches, and the `identity` mapping (direct solver) approach, is available in the [IGM documentation](https://igm-model.org/latest/emulators/pretrained_emulator/).
 
 ```bash
 igm_run +experiment=params_A_step5
@@ -106,8 +109,8 @@ igm_run +experiment=params_A_step5
 # Part B — Data assimilation by hyperparameter tuning
 
 The first data-assimilation strategy. Rather than inverting a spatial field, it
-treats a few **scalar model parameters** as unknowns and uses the **Optuna**
-sweeper to search the values that best reproduce observations. The forward model
+treats a few scalar SMB model parameters as unknowns and uses the **Optuna**
+sweeper to search for the values that best reproduce DEM observations. The forward model
 is the realistic climate/SMB setup of Part A Steps 3–4 (`clim_aletsch` +
 `smb_accmelt` + observation tracking), but with the on-line retrained iceflow
 solver (Step 5), run from 1880 to 2020.
@@ -138,11 +141,11 @@ pip install optuna-dashboard          # one-off install
 optuna-dashboard sqlite:///optuna_1obj.db 
 ```
 
-**Optimal parameters found:** the best trial achieved `cost_usurf = XXX` (mean
-STD between modelled and observed surface elevations across all 7 observation
-years) with `weight_accumulation = 1.84`, `weight_ablation = 2.01`. These
+**Optimal parameters found:** in testing, the lowest misfit was achieved with `weight_accumulation = 1.84`, `weight_ablation = 2.01`. These
 optimized values are used as the defaults in the realistic forward runs
 (Part A, Steps 3–4) and as the baseline here.
+
+**GPU distribution:** Note that although Optuna runs 4 trials "in parallel", by default they all run on the same GPU. Information about alternative GPU distribution strategies can be found [here](https://igm-model.org/latest/hydra/optuna_cluster/#gpu-distribution).
 
 ### Step 2: Multi-objective optimization (`params_B_2obj.yaml`)
 
@@ -163,6 +166,7 @@ shear stress at a typical Aletsch trunk speed).
 igm_run +experiment=params_B_2obj
 
 # With NSGA-II multi-objective optimization (200 trials, 4 in parallel):
+# Note that this can take several hours to run!
 igm_run -m +experiment=params_B_2obj \
         hydra/sweeper=igm_optuna \
         hydra.sweeper.optuna_config=optuna/optuna_2obj_params.yaml
@@ -200,9 +204,9 @@ python tools/plot_misfit_maps.py --run multirun/<date>/<trial_number>
 
 Recovers the ice thickness from surface observations using IGM's
 `data_assimilation` module. The inversion optimizes the ice thickness field so
-that modelled surface velocities (Blatter–Pattyn physics) best match observed
-velocities, while regularization keeps the solution physically plausible. This
-is IGM's current inversion but `field_inversion` will be its successor.
+that IGM-modelled surface velocities best match observed
+velocities, while regularization helps to ensure a plausibly smooth thickness field. This
+is IGM's current inversion module, and will eventually be phased out in favour of the new `field_inversion` module.
 
 Steps 1–3 use `params_C_offline.yaml` (off-line trained emulator); Step 4 uses
 `params_C_online.yaml` (on-line retrained solver). Both share the same
@@ -210,7 +214,7 @@ data-assimilation setup:
 - **Ice flow**: the `unified` iceflow — the off-line trained emulator in Steps 1–3 (`params_C_offline`), or the on-line retrained solver in Step 4 (`params_C_online`, retrained every 50 iterations)
 - **Control variable**: ice thickness (`thk`)
 - **Cost function**: surface velocity misfit (`velsurf`) + ice-mask penalty (`icemask`)
-- **Optimizer**: ADAM with learning-rate decay, up to 1000 iterations
+- **Optimizer**: Adam with learning-rate decay, up to 1000 iterations
 - **Regularization**: gradient penalty on `thk` (weight `regularization.thk`)
 
 ### Step 1 — Single inversion (off-line trained emulator)
@@ -219,9 +223,11 @@ data-assimilation setup:
 igm_run +experiment=params_C_offline hydra.run.dir=outputs/DA_step1
 ```
 
-This takes ~15 min on a GPU. Key result files in `outputs/DA_step1/`:
+This takes 1–5 min on a GPU. Key result files in `outputs/DA_step1/`:
 - `geology-optimized.nc` — final ice thickness, velocities and other fields
 - `optimize.nc` — optimization history (iterations)
+
+Note also that we have set a working directory via `hydra.run.dir`, to clearly label our results and make them easy to find.
 
 
 ### Step 2 — L-curve analysis (velocity only)
@@ -244,11 +250,11 @@ python tools/analyze_step1.py outputs/DA_step2
 ```
 
 This produces `lcurve_step1.png` (L-curve + misfit-vs-regularization). The elbow
-(typically reg ≈ 10–30 for Aletsch) indicates the best balance.
+(typically reg ≈ 100–300 for Aletsch) indicates the best balance.
 
 ### Step 3 — Sliding-coefficient sweep with thickness validation
 
-When thickness observations (GPR) are available, they can validate the inversion
+When thickness observations are available, they can validate the inversion
 and constrain the sliding coefficient. Sweep `physics.sliding.tau_ref` with the
 regularization weight fixed:
 
@@ -285,10 +291,10 @@ igm_run +experiment=params_C_online hydra.run.dir=outputs/DA_step4
 The same machinery, but inverting **three controls simultaneously** — ice
 thickness (`thk`), basal friction (`tau_ref`), and surface elevation
 (`usurf`) — against **multiple observations at once**: surface velocities,
-the surface DEM, radar (GPR) thickness profiles, and a flux-divergence
+the surface DEM, radar thickness profiles, and a flux-divergence
 constraint (`divfluxfcz`, which keeps `divflux` close to a smooth
-linear-in-elevation, SMB-like target — the key to using the assimilated
-state as a shock-free start for transient runs). The regularization weights
+linear-in-elevation, SMB-like target, helping to reduce shock during transient runs when initializing from the assimilated
+state). The regularization weights
 of `thk` and `tau_ref` were calibrated by L-curve analysis.
 
 ```bash
@@ -309,27 +315,25 @@ identical surface velocities), so an excellent fit to all observations does
 
 A newer, lighter inversion route that is set to replace `data_assimilation`
 (Part C) in the long term. Instead of running the glacier forward in time, the
-`field_inversion` module solves a single **bounded optimisation** for the
+`field_inversion` module solves a single **bounded optimization** for the
 spatially-varying ice thickness (`thk`) that best reproduces observed surface
 velocities. The objective combines a **misfit** term (`velsurf`, Huber loss
 between modelled `uvelsurf/vvelsurf` and observed `uvelsurfobs/vvelsurfobs`) and
 a **regularization** term on `thk` (squared-Laplacian smoothness referenced to
 the surface `usurf`), with the thickness bounded to `[0, 1000] m`. Forward
-velocities come from the off-line trained iceflow emulator (the shipped pretrained
-`dahunet_mini.keras` network); the inversion itself uses an L-BFGS optimiser
+velocities come from the off-line pretrained iceflow emulator; the inversion itself uses an L-BFGS optimizer
 (Hager–Zhang line search).
 
 ### Step 1 — Real-world inversion (`params_D_real.yaml`)
 
-Inverts directly the **real Aletsch observations** stored in `data/input.nc`.
+Inverts directly the observed Aletsch velocities stored in `data/input.nc`.
 
 Key points of using real data:
-- There is **no ground-truth thickness**, so inspect the result through the
+- There is no full-coverage ground-truth thickness field, so inspect the result through the
   iterative `optimize.nc` and the final `output.nc`.
-- Observed surface velocities cover only part of the glacier (~73% of cells are
-  NaN); the misfit term automatically restricts the cost to finite observations
+- Observed surface velocities cover only part of the `icemask` domain; the misfit term automatically restricts the cost to finite observations
   intersected with `icemask`, so gaps are handled cleanly (`mask: icemask`).
-- The basal sliding parameter is genuinely unknown, so `tau_ref` is set to the
+- The basal sliding parameter is unknown, so `tau_ref` is set to the
   in-distribution default value (0.213 MPa at u_ref=100).
 
 ```bash
@@ -353,8 +357,8 @@ since we invert for thickness only.
 igm_run +experiment=params_D_synthetic
 ```
 
-Writes the inverted fields to `output.nc` alongside `inverse_accuracy`
-diagnostics, plus two figures comparing thickness and surface-velocity misfit.
+Writes the inverted fields to `output.nc`. This experiment also includes `inverse_accuracy`, a custom module that prints
+diagnostics to the terminal and creates two figures (as `.png` files) comparing thickness and surface-velocity misfit.
 
 > **Note:** `data_assimilation` (Part C), `field_inversion` (Part D) and
 > `time_relaxation` (Part E) are complementary assimilation routes. Parts C and D
@@ -374,18 +378,18 @@ observations. By the end, geometry, mass balance and velocity are mutually
 consistent and match the data.
 
 **The method.** `time_relaxation` is fully generic — a run is a list of
-independent `steps`, each an orthogonal triple `(residual, update law, control)`.
-A control field `C` is nudged so a residual `r` between a modelled quantity `M`
+independent `steps`, each a triple `(residual, update law, control)`.
+A control field `C` is nudged, according to an update law, so a residual `r` between a modelled quantity `M`
 and a target `T` is driven toward zero. The whole inner loop runs inside the
 module, which *replaces* the usual `time` module. 
 
 **What this example fits.** Three steps run together:
 
-| Control nudged | Driven to match | Step |
+| Control nudged | Residual to minimize | Step |
 |---|---|---|
-| `thk` (ice thickness) | flux divergence `divflux` → apparent mass balance `amb = smb − dhdt_obs` | `amb_thk` |
+| `thk` (ice thickness) | `(amb − divflux)`, where `divflux` is flux divergence, and `amb = smb − dhdt_obs` is apparent mass balance | `amb_thk` |
 | `usurf` (surface elevation) | same shared AMB residual `(amb − divflux)` | `amb_usurf` |
-| `tau_ref` (basal friction) | observed surface speed `velsurf_magobs` | `friction` |
+| `tau_ref` (basal friction) | observed surface speed error `velsurf_mag − velsurf_magobs` | `friction` |
 
 The first two are the **apparent-mass-balance bed inversion** of *Frank & van
 Pelt (2024)*: `thk` and `usurf` are perturbed jointly until the modelled flux
