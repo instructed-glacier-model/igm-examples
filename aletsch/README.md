@@ -7,6 +7,10 @@ every configuration lives in a single `experiment/` directory, run with
 `igm_run +experiment=<name>`. Files are prefixed by part letter 
 (`params_A_*`, `params_B_*`, …) so they list in tutorial order.
 
+This README is the reference version of the tutorial and covers all parts
+(A–E). The [IGM documentation](https://igm-model.org/latest/tutorials/aletsch/)
+reproduces some parts of it.
+
 **Part A** demonstrates **standard forward modelling** — running the glacier
 forward in time — built up in steps of increasing complexity (simple ELA SMB →
 custom SMB module → realistic climate/SMB → particle tracking). Steps 1–4 all use
@@ -450,7 +454,8 @@ exposes them as `state.score`): `rmse_divflux_minus_amb` (AMB fit, m/yr),
 | `seeding.nc` | Particle seeding map (Part A, Step 4). |
 
 Velocity data from Millan et al. (2019), thickness from Grab et al. (2021),
-outlines from Linsbauer et al. (2021).
+outlines from Linsbauer et al. (2021), surface elevation change (`dhdt`) from
+Hugonnet et al. (2021).
 
 ---
 
@@ -459,5 +464,6 @@ outlines from Linsbauer et al. (2021).
 - Millan, R. et al. (2019). Mapping surface flow velocity of glaciers at regional scale using a multiple sensors approach. *Remote Sensing*, 11(21), 2498.
 - Grab, M. et al. (2021). Ice thickness distribution of all Swiss glaciers based on extended ground-penetrating radar data and glaciological modeling. *Journal of Glaciology*, 67(266), 1074–1092.
 - Linsbauer, A. et al. (2021). The new Swiss Glacier Inventory SGI2016: From a topographical to a glaciological dataset. *Frontiers in Earth Science*, 774.
+- Hugonnet, R. et al. (2021). Accelerated global glacier mass loss in the early twenty-first century. *Nature*, 592(7856), 726–731.
 - Frank and van Pelt (2024). Ice thickness and volume of all Scandinavian glaciers and ice caps. *Journal of Glaciology* 1-14.
 - Frank, Thomas, et al. "Global glacier-free topography reveals a large potential for future lakes in presently ice-covered terrain." *Nature Communications* 17.1 (2026): 3985.

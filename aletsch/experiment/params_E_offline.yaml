@@ -51,7 +51,7 @@ processes:
   iceflow:
     physics:
       viscosity:
-        arrhenius: 30
+        arrhenius: 78
       sliding:
         tau_ref: 0.1     # basal shear stress (MPa) ...
         u_ref:   100.0   # ... at the reference speed u_ref = 100 m/yr
