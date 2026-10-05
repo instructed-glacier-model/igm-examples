@@ -104,6 +104,11 @@ More information on both emulated approaches, and the `identity` mapping (direct
 igm_run +experiment=params_A_step5
 ```
 
+**Tip:** to check that the on-line retraining actually converges, print the
+ice-flow cost as it is being minimised by adding
+`processes.iceflow.unified.display.print_cost=True` to the command line; the
+cost should decrease and level off at each retraining.
+
 ---
 
 # Part B — Data assimilation by hyperparameter tuning
@@ -174,8 +179,14 @@ igm_run -m +experiment=params_B_2obj \
 
 The study is persisted in `optuna_2obj.db` (study `aletsch_2obj`).
 
-**Pareto front plot.** A standalone script reads the SQLite database and draws
-the Pareto front:
+**Pareto front plot.** With two objectives there is in general no single best
+trial: improving one cost usually degrades the other. A trial is
+*Pareto-optimal* if no other trial is better in both costs at once; together
+these trials form the **Pareto front**, the trade-off curve between
+`cost_usurf` and `cost_velsurf`. In the plot, look for the front's "knee",
+where a small loss in one objective buys a large gain in the other; trials far
+from the front are simply worse and can be ignored. A standalone script reads
+the SQLite database and draws the Pareto front:
 
 ```bash
 python tools/plot_pareto_front.py
@@ -381,7 +392,10 @@ consistent and match the data.
 independent `steps`, each a triple `(residual, update law, control)`.
 A control field `C` is nudged, according to an update law, so a residual `r` between a modelled quantity `M`
 and a target `T` is driven toward zero. The whole inner loop runs inside the
-module, which *replaces* the usual `time` module. 
+module, which *replaces* the usual `time` module: `time_relaxation` and `time`
+cannot be combined in one experiment, and the run stops when the relaxation
+ends. To run a forward simulation from the assimilated state, start a separate
+experiment that reads the final `output.nc` as its input.
 
 **What this example fits.** Three steps run together:
 
