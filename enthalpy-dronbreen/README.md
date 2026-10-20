@@ -109,12 +109,14 @@ optuna-dashboard sqlite:///optuna_cts.db     # optional, interactive
 the best run can be inspected without looking up its trial number.
 
 A 64-trial sweep reaches **18.8 m**, and those best-fit values are what
-`params_step1_spinup.yaml` ships. Only the ELA is really constrained, though: of the 64
-trials, 30 land within 1 m of the best misfit, and across that near-optimal set `ela`
-spans just 20% of its search range while `T_ela` and the geothermal flux each span
-over 70%. The two best trials tie at 18.81 m with `T_ela` of 1.44 vs 0.42 °C — the
-radar fixes the altitude of the thermal transition and the total heat budget, but not
-how the heat is split between refreezing above and geothermal flux below.
+`params_step1_spinup.yaml` ships. Of the 64 trials, 30 land within 1 m of the best
+misfit; across that near-optimal set `ela` spans just 20% of its search range while the
+geothermal flux spans over 70%. All 30 have `T_ela` > 0, and since the enthalpy module
+caps the surface temperature at 0 °C, every such value gives the same run: a surface at
+the melting point above the ELA. The four trials with `T_ela` < 0, i.e. a colder
+surface, score 25–35 m. The radar thus fixes the altitude of the thermal transition and
+requires a surface at the melting point above it, but leaves the geothermal flux only
+weakly constrained.
 
 ## Calibrated parameters
 

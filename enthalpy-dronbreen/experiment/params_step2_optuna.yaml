@@ -5,7 +5,7 @@
 # The same model as Step 1, plus the `track_cts_err` process, which compares the
 # modelled cold-temperate transition surface with 10 GPR profiles and writes the mean
 # RMSE to state.score["cost_cts"]. Optuna minimises that cost over the two parameters
-# of the refreezing proxy and the length of the spin-up.
+# of the refreezing proxy and the geothermal flux.
 #
 # Run the sweep with:
 #   igm_run -m +experiment=params_step2_optuna \
